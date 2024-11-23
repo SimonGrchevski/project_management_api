@@ -10,6 +10,7 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
+      - ./src/migration:/app/src/migration
     environment:
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
