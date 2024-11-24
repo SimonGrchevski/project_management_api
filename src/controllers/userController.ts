@@ -2,15 +2,24 @@ import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { User } from "../entities/User";
 import bcrypt from "bcrypt";
+import { validationResult } from "express-validator";
 
 const userRepo = AppDataSource.getRepository(User);
 
 export class UserController {
 
     static async registerUser(req: Request, res: Response ): Promise<void> {
+
+        const err = validationResult(req);
+
+        if(!err.isEmpty()) {
+            res.status(400).json({ errors: err.array() });
+            return;
+        }
+
         const { username, password, email, role } = req.body;
 
-        try{
+        try {
             const existingUser = await userRepo.findOneBy({username,email});
             if( existingUser ) {
                 res.status(400).json({msg:"username or email is already used"});

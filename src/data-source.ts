@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
 import dotenv from "dotenv";
+import * as entities from "./entities"
 
 dotenv.config();
 
@@ -16,6 +17,6 @@ export const AppDataSource = new DataSource({
     database: isTestEnv? ":memory": process.env.DB_NAME!,
     synchronize: isTestEnv,
     logging: !isTestEnv && !isProduction,
-    entities: [isProduction ? "dist/entities/*.js" : "src/entities/*.ts"],
+    entities: Object.values(entities),
     migrations: ["dist/migration/*.js"],
 });
