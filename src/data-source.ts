@@ -16,6 +16,6 @@ export const AppDataSource = new DataSource({
     database: isTestEnv? ":memory": process.env.DB_NAME!,
     synchronize: isTestEnv,
     logging: !isTestEnv && !isProduction,
-    entities: ["dist/entities/*.js"],
+    entities: [isProduction ? "dist/entities/*.js" : "src/entities/*.ts"],
     migrations: ["dist/migration/*.js"],
 });
