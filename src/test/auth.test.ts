@@ -10,7 +10,7 @@ describe("Auth API", () => {
         testUser = {
             username:"testuser", 
             email:"testemail@email.com", 
-            password:"testpassword123"
+            password:"TestPassword123"
         };
     });
 
@@ -52,15 +52,48 @@ describe("Auth API", () => {
         });
     })
 
-    // it("Should fail when email is invalid", async () => {
-    //     const response = await request(app)
-    //          .post("/auth/register")
-    //          .send({...testUser, email:"invalid"});
+    it("Should fail when email is invalid", async () => {
+        const response = await request(app)
+             .post("/auth/register")
+             .send({...testUser, email:"invalid"});
  
-    //     //  expect(response.status).toBe(400);
-    //      expect(response.body).toStrictEqual({
-    //          msg:"Invalid email"
-    //      });
-    //  })
+         expect(response.status).toBe(400);
+         expect(response.body.errors[0].msg).toBe("Invalid email format");
+    });
 
-})
+    it("Should fail when username is empty", async () => {
+        const response = await request(app)
+             .post("/auth/register")
+             .send({...testUser, username:""});
+ 
+         expect(response.status).toBe(400);
+         expect(response.body.errors[0].msg).toBe("Username is required");
+    });
+
+    it("Should fail when password is less then 8 characters", async () => {
+        const response = await request(app)
+             .post("/auth/register")
+             .send({...testUser, password:"I0"});
+ 
+         expect(response.status).toBe(400);
+         expect(response.body.errors[0].msg).toBe("Password must be at least 8 characters long");
+    });
+
+    it("Should fail when password is without uppercase letter", async () => {
+        const response = await request(app)
+             .post("/auth/register")
+             .send({...testUser, password:"testpassword123"});
+ 
+         expect(response.status).toBe(400);
+         expect(response.body.errors[0].msg).toBe("Password must contain at least one uppercase letter");
+    });
+
+    it("Should fail when password is without at least one numerical character", async () => {
+        const response = await request(app)
+             .post("/auth/register")
+             .send({...testUser, password:"TestPassword"});
+ 
+         expect(response.status).toBe(400);
+         expect(response.body.errors[0].msg).toBe("Password must contain at least one number");
+    });
+});
