@@ -5,6 +5,15 @@ import { User } from "../entities/User";
 
 describe("Auth API", () => {
 
+    let testUser: { username: string; email: string; password: string };
+    beforeAll(() => {
+        testUser = {
+            username:"testuser", 
+            email:"testemail@email.com", 
+            password:"testpassword123"
+        };
+    });
+
     beforeEach(async () => {
         const entities = AppDataSource.entityMetadatas;
         for (const entity of entities) {
@@ -19,11 +28,7 @@ describe("Auth API", () => {
     it("Should register a new user successfully", async() => {
         const response = await request(app)
         .post("/auth/register")
-        .send({
-            username:"testuser",
-            password:"testpassword",
-            email:"testemail@temail.com"
-        });
+        .send(testUser);
 
         expect(response.status).toBe(201);
         expect(response.body).toStrictEqual( {
@@ -31,4 +36,31 @@ describe("Auth API", () => {
             username:"testuser"
         });
     });
+
+    it("Should return error for duplicate username or email", async () => {
+       await request(app)
+            .post("/auth/register")
+            .send(testUser);
+
+        const response = await request(app)
+            .post("/auth/register")
+            .send(testUser);
+
+        expect(response.status).toBe(400);
+        expect(response.body).toStrictEqual({
+            msg:"username or email is already used"
+        });
+    })
+
+    // it("Should fail when email is invalid", async () => {
+    //     const response = await request(app)
+    //          .post("/auth/register")
+    //          .send({...testUser, email:"invalid"});
+ 
+    //     //  expect(response.status).toBe(400);
+    //      expect(response.body).toStrictEqual({
+    //          msg:"Invalid email"
+    //      });
+    //  })
+
 })
