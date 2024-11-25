@@ -4,7 +4,7 @@ import { AppDataSource } from "../data-source";
 import { User } from "../entities/User";
 import bcrypt from "bcrypt";
 import { Express } from "express";
-import { rateLimiterMiddleware } from "../middlewares/rateLimiterMiddleware";
+import { rateLimiterManager } from "../middlewares/rateLimiterManager";
 import { RATE_LIMIT_CONFIG } from "../config/constants";
 
 describe("Auth API", () => {
@@ -47,7 +47,8 @@ describe("Auth API", () => {
     });
 
     beforeEach(async () => {
-        rateLimiterMiddleware.resetKey(RATE_LIMIT_CONFIG.CLIENT_KEY!);
+        // rateLimiterMiddleware.resetKey(RATE_LIMIT_CONFIG.CLIENT_KEY!);
+        rateLimiterManager.resetAllKeys();
     });
 
     describe("Registration Success", () => {
@@ -304,6 +305,31 @@ describe("Auth API", () => {
                 });
             expect(res.status).toBe(201);
         });
+
+        it("Should limit requests per client IP", async () => {
+            for (let i = 0; i < 10; i++) {
+                const res = await request(expressApp)
+                    .post("/auth/register")
+                    .set("X-Forwarded-For", "192.168.1.1")
+                    .send({
+                        username: `User${i}`,
+                        password: "TestPassword1",
+                        email: `user${i}@example.com`,
+                    });
+                expect(res.status).toBe(201);
+            }
+        
+            const resFromAnotherClient = await request(expressApp)
+                .post("/auth/register")
+                .set("X-Forwarded-For", "192.168.1.2")
+                .send({
+                    username: "NewUser",
+                    password: "TestPassword1",
+                    email: "newuser@example.com",
+                });
+            expect(resFromAnotherClient.status).toBe(201);
+        });
+
     });
 
     describe("Input Validation", () => {
