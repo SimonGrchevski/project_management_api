@@ -7,7 +7,7 @@ import { MalformJsonMiddleware } from "./middlewares/malformedJsonMiddleware";
 interface AppWithDataSource {
     app: Express;
     dataSource: typeof AppDataSource;
-}
+}////////////////////
 
 export const createApp = () :AppWithDataSource => {
     const app = express();
@@ -17,7 +17,7 @@ export const createApp = () :AppWithDataSource => {
     app.use("/auth", rateLimiterMiddleware);
 
     app.use("/auth", authRoutes);
-    
+
     return {
         app,
         dataSource: AppDataSource,

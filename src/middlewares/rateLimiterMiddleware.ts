@@ -1,14 +1,15 @@
 import rateLimit from "express-rate-limit";
+import { RATE_LIMIT_CONFIG } from "../config/constants";
 
 export const rateLimiterMiddleware = rateLimit({
-    windowMs: 60*1000,
-    max: 10,
+    windowMs: RATE_LIMIT_CONFIG.WINDOW_MS,
+    max: RATE_LIMIT_CONFIG.MAX_REQUESTS,
     message: {
-        msg:"Too many requests, please try again later"
+        msg:RATE_LIMIT_CONFIG.ERROR_MESSAGE
     },
     standardHeaders: true,
     legacyHeaders: false,
     keyGenerator: (req) => {
-        return process.env.NODE_ENV === "test" ? "test-client" : req.ip || "unknown";
+        return RATE_LIMIT_CONFIG.CLIENT_KEY || req.ip || "unknown";
     },
 });

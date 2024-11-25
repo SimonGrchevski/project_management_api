@@ -5,11 +5,7 @@ import { User } from "../entities/User";
 import bcrypt from "bcrypt";
 import { Express } from "express";
 import { rateLimiterMiddleware } from "../middlewares/rateLimiterMiddleware";
-
-interface AppWithDataSource {
-    app: Express;
-    dataSource: typeof AppDataSource;
-}
+import { RATE_LIMIT_CONFIG } from "../config/constants";
 
 describe("Auth API", () => {
     let expressApp: Express;
@@ -51,7 +47,7 @@ describe("Auth API", () => {
     });
 
     beforeEach(async () => {
-        rateLimiterMiddleware.resetKey("test-client");
+        rateLimiterMiddleware.resetKey(RATE_LIMIT_CONFIG.CLIENT_KEY!);
     });
 
     describe("Registration Success", () => {
@@ -268,7 +264,7 @@ describe("Auth API", () => {
 
     describe("Rate Limiting", () => {
         it("Should fail after too many requests in a short period", async () => {
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < RATE_LIMIT_CONFIG.MAX_REQUESTS; i++) {
                 const res = await request(expressApp)
                     .post("/auth/register")
                     .send({
@@ -282,7 +278,31 @@ describe("Auth API", () => {
 
             const res = await request(expressApp).post("/auth/register").send(testUser);
             expect(res.status).toBe(429);
-            expect(res.body.msg).toBe("Too many requests, please try again later");
+            expect(res.body.msg).toBe(RATE_LIMIT_CONFIG.ERROR_MESSAGE);
+        });
+
+        it("Should reset after the rate limit window expires", async () => {
+            for (let i = 0; i < RATE_LIMIT_CONFIG.MAX_REQUESTS; i++) {
+                const res = await request(expressApp)
+                    .post("/auth/register")
+                    .send({
+                        username: `User${i}`,
+                        password: "TestPassword1",
+                        email: `user${i}@example.com`,
+                    });
+                expect(res.status).toBe(201);
+            }
+        
+            await new Promise((resolve) => setTimeout(resolve,RATE_LIMIT_CONFIG.WINDOW_MS));
+        
+            const res = await request(expressApp)
+                .post("/auth/register")
+                .send({
+                    username: "NewUser",
+                    password: "TestPassword1",
+                    email: "newuser@example.com",
+                });
+            expect(res.status).toBe(201);
         });
     });
 
