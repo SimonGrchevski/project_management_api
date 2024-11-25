@@ -307,7 +307,7 @@ describe("Auth API", () => {
         });
 
         it("Should limit requests per client IP", async () => {
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < RATE_LIMIT_CONFIG.MAX_REQUESTS; i++) {
                 const res = await request(expressApp)
                     .post("/auth/register")
                     .set("X-Forwarded-For", "192.168.1.1")
@@ -330,6 +330,53 @@ describe("Auth API", () => {
             expect(resFromAnotherClient.status).toBe(201);
         });
 
+
+        it("Should handle concurrent requests within the limit", async () => {
+            const promises = [];
+            for (let i = 0; i < RATE_LIMIT_CONFIG.MAX_REQUESTS; i++) {
+                promises.push(
+                    request(expressApp)
+                        .post("/auth/register")
+                        .send({
+                            username: `User${i}`,
+                            password: "TestPassword1",
+                            email: `user${i}@example.com`,
+                        })
+                );
+            }
+        
+            const responses = await Promise.all(promises);
+        
+            responses.forEach((res) => {
+                expect(res.status).toBe(201);
+            });
+
+        });
+
+        it("Should allow up to the limit and reject exceeding requests in a single loop", async () => {
+            const exceedingLimit = 5;
+            const results = await Promise.all(
+                Array.from({ length: RATE_LIMIT_CONFIG.MAX_REQUESTS+exceedingLimit }).map((_, i) =>
+                    request(expressApp)
+                        .post("/auth/register")
+                        .send({
+                            username: `User${i}`,
+                            password: "TestPassword1",
+                            email: `user${i}@example.com`,
+                        })
+                        .then((res) => ({
+                            status: res.status,
+                            body: res.body,
+                        }))
+                )
+            );
+        
+            const successfulRequests = results.filter((res) => res.status === 201).length;
+            const failedRequests = results.filter((res) => res.status === 429).length;
+        
+            expect(successfulRequests).toBe(RATE_LIMIT_CONFIG.MAX_REQUESTS);
+            expect(failedRequests).toBe(exceedingLimit);
+        });
     });
 
     describe("Input Validation", () => {
