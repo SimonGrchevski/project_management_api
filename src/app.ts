@@ -1,24 +1,3 @@
-// import express from "express";
-// import authRoute from "./routes/auth"
-// import { handleMalformJsonMiddleware } from "./middlewares/malformedJsonMiddleware";
-// import { rateLimiterMiddleware } from "./middlewares/rateLimiterMiddleware";
-// import { Request, Response, NextFunction } from "express";
-
-// const app = express();
-
-// app.use(express.json());
-// app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-//     handleMalformJsonMiddleware(err, req, res, next);
-// });
-// app.use(rateLimiterMiddleware);
-
-// app.use("/auth", authRoute);
-
-
-
-
-// export default app;
-
 import express, { Express, Request, Response, NextFunction } from "express";
 import { AppDataSource } from "./data-source";
 import { rateLimiterMiddleware } from "./middlewares/rateLimiterMiddleware";
@@ -38,11 +17,7 @@ export const createApp = () :AppWithDataSource => {
     app.use("/auth", rateLimiterMiddleware);
 
     app.use("/auth", authRoutes);
-
-
     
-    
-
     return {
         app,
         dataSource: AppDataSource,

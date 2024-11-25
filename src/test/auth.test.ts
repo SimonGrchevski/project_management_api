@@ -278,25 +278,25 @@ describe("Auth API", () => {
         expect(response.body.msg).toBe("Invalid JSON payload");
     });
 
-    // it("Should fail after too many requests in a short period", async() => {
-    //     for(let i = 0; i < 10; i++) {
-    //         const res = await request(expressApp)
-    //             .post("/auth/register")
-    //             .send({
-    //                 username: `Username${i}`,
-    //                 password: "123username",
-    //                 email: `testemail${i}@testmail.com`
-    //             })
+    it("Should fail after too many requests in a short period", async() => {
+        for(let i = 0; i < 10; i++) {
+            const res = await request(expressApp)
+                .post("/auth/register")
+                .send({
+                    username: `Username${i}`,
+                    password: "123Username",
+                    email: `testemail${i}@testmail.com`
+                })
 
-    //         expect(res.status).toBe(201);
-    //     };
+            expect(res.status).toBe(201);
+        };
 
-    //     const res = await request(expressApp)
-    //         .post("/auth/register")
-    //         .send(testUser)
+        const res = await request(expressApp)
+            .post("/auth/register")
+            .send(testUser)
         
-    //     expect(res.status).toBe(429);
-    //     expect(res.body.msg).toBe("Too many requests, please try again later");
-    // })
+        expect(res.status).toBe(429);
+        expect(res.body.msg).toBe("Too many requests, please try again later");
+    })
 });
 
