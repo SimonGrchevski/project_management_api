@@ -20,14 +20,27 @@ export class UserController {
         const { username, password, email, role } = req.body;
 
         try {
-            const existingUser = await userRepo.findOneBy({username,email});
+
+            const existingUser = await userRepo
+                .createQueryBuilder("user")
+                .where("LOWER(user.username) = :username OR LOWER(user.email) = :email", {
+                    username,
+                    email
+                })
+                .getOne();
+
             if( existingUser ) {
                 res.status(400).json({msg:"username or email is already used"});
                 return;
             }
 
             const hashedPassword = await bcrypt.hash(password,10);
-            const newUser = userRepo.create({username,password:hashedPassword,email,role});
+            const newUser = userRepo.create({
+                username,
+                password:hashedPassword,
+                email,
+                role
+            });
             const savedUser = await userRepo.save(newUser);
             res.status(201).json({id:savedUser.id, username:savedUser.username});
 
