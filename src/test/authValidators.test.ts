@@ -21,7 +21,7 @@ app.post("/test", (req, res) => {
     validateMiddleware(validators)(req, res);
 });
 
-describe("Validators", () => {
+describe("auth Validators", () => {
     const testUser = {
         username:"validUsername",
         password: "ValidPass123",

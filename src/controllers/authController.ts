@@ -7,7 +7,7 @@ import { validationResult } from "express-validator";
 
 const userRepo = AppDataSource.getRepository(User);
 
-export class UserController {
+export class AuthController {
 
     static async registerUser(req: Request, res: Response ): Promise<void> {
 

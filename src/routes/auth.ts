@@ -1,5 +1,5 @@
 import express from "express";
-import { UserController } from "../controllers/userController";
+import { AuthController } from "../controllers/authController";
 import { validateRequest } from "../middlewares/validate";
 import { inputNormalizer } from "../middlewares/inputNormalizer";
 import { registerValidator, loginValidator } from "../validators";
@@ -11,14 +11,14 @@ router.post(
     inputNormalizer,
     registerValidator,
     validateRequest,
-    UserController.registerUser
+    AuthController.registerUser
 );
 
 router.post(
     "/login",
     loginValidator,
     validateRequest,
-    UserController.login
+    AuthController.login
 );
 
 export default router;
