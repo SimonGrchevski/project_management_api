@@ -47,7 +47,6 @@ describe("Auth API", () => {
     });
 
     beforeEach(async () => {
-        // rateLimiterMiddleware.resetKey(RATE_LIMIT_CONFIG.CLIENT_KEY!);
         rateLimiterManager.resetAllKeys();
     });
 

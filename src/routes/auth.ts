@@ -11,7 +11,7 @@ router.post(
     inputNormalizer,
     registerValidator,
     validateRequest,
-    AuthController.registerUser
+    AuthController.register
 );
 
 router.post(

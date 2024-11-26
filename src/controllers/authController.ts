@@ -9,7 +9,7 @@ const userRepo = AppDataSource.getRepository(User);
 
 export class AuthController {
 
-    static async registerUser(req: Request, res: Response ): Promise<void> {
+    static async register(req: Request, res: Response ): Promise<void> {
 
         const err = validationResult(req);
 
