@@ -9,11 +9,11 @@ const userRepo = AppDataSource.getRepository(User);
 
 export class AuthController {
 
-    static async register(req: Request, res: Response ): Promise<void> {
+    static async register(req: Request, res: Response): Promise<void> {
 
         const err = validationResult(req);
 
-        if(!err.isEmpty()) {
+        if (!err.isEmpty()) {
             res.status(400).json({ errors: err.array() });
             return;
         }
@@ -30,59 +30,69 @@ export class AuthController {
                 })
                 .getOne();
 
-            if( existingUser ) {
-                res.status(400).json({msg:"username or email is already used"});
+            if (existingUser) {
+                res.status(400).json({ msg: "username or email is already used" });
                 return;
             }
 
-            const hashedPassword = await bcrypt.hash(password,10);
+            const hashedPassword = await bcrypt.hash(password, 10);
             const newUser = userRepo.create({
                 username,
-                password:hashedPassword,
+                password: hashedPassword,
                 email,
                 role
             });
             const savedUser = await userRepo.save(newUser);
-            res.status(201).json({id:savedUser.id, username:savedUser.username});
+            res.status(201).json({ id: savedUser.id, username: savedUser.username });
 
-        } catch( err ) {
-            res.status(500).json({msg:"Internal server error", err});
+        } catch (err) {
+            res.status(500).json({ msg: "Internal server error", err });
             return;
         }
     }
 
-    static async login(req: Request, res: Response ): Promise<void> {
+
+    static async login(req: Request, res: Response): Promise<void> {
+
+        const err = validationResult(req);
+
+        if (!err.isEmpty()) {
+            res.status(400).json({ errors: err.array() });
+            return;
+        }
         
         const { username, password } = req.body;
+
         try {
 
-            const user = await AppDataSource.getRepository(User).findOneBy({username} );
-            if(!user) {
-                res.status(404).json({msg:"Invalid credentials!"});
-                return;
-            }
-            
-            const correctPassword = await bcrypt.compare(password,user.password);
-            if(!correctPassword) {
-                res.status(401).json({msg:"Invalid credentials!"});
+            const user = await userRepo.findOneBy({ username });
+            if (!user) {
+                res.status(404).json({ msg: "Invalid credentials!" });
                 return;
             }
 
-            const token = jwt.sign({id:user.id, username:user.username},process.env.SECRET_KEY!,{
-                expiresIn:"1h",
-                algorithm:"HS512"
-            })
+            const correctPassword = await bcrypt.compare(password, user.password);
+            if (!correctPassword) {
+                res.status(401).json({ msg: "Invalid credentials!" });
+                return;
+            }
 
-            res.cookie("authToken", token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "strict",
-                maxAge: 60 * 60 * 1000,
+            const token = jwt.sign({ id: user?.id, username: user?.username }, process.env.SECRET_KEY!, {
+                expiresIn: "1h",
+                algorithm: 'HS512'
             });
 
-        }catch(err) {
+            // res.cookie("authToken", token, {
+            //     httpOnly: true,
+            //     secure: process.env.NODE_ENV === "production",
+            //     sameSite: "strict",
+            //     maxAge: 60 * 60 * 1000,
+            // });
+
+            res.status(200).json({ token });
+
+        } catch (err) {
             res.status(500).json(err);
         }
     }
-
 }

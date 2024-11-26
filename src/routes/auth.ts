@@ -3,8 +3,10 @@ import { AuthController } from "../controllers/authController";
 import { validateRequest } from "../middlewares/validate";
 import { inputNormalizer } from "../middlewares/inputNormalizer";
 import { registerValidator, loginValidator } from "../validators";
+import { check } from "express-validator";
 
 const router = express.Router();
+
 
 router.post(
     "/register",
@@ -18,7 +20,9 @@ router.post(
     "/login",
     loginValidator,
     validateRequest,
-    AuthController.login
+    AuthController.login,
 );
+
+
 
 export default router;
