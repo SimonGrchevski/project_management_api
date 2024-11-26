@@ -1,8 +1,8 @@
-import express, { Express, Request, Response, NextFunction } from "express";
+import express, { Express } from "express";
 import { AppDataSource } from "./data-source";
+import { MalformJsonMiddleware } from "./middlewares/malformedJsonMiddleware";
 import { rateLimiterManager } from "./middlewares/rateLimiterManager";
 import authRoutes from "./routes/auth";
-import { MalformJsonMiddleware } from "./middlewares/malformedJsonMiddleware";
 
 interface AppWithDataSource {
     app: Express;
@@ -13,9 +13,11 @@ export const createApp = () :AppWithDataSource => {
     const app = express();
     
     app.use(express.json());
+    // middlewares
     app.use(MalformJsonMiddleware);
     app.use("/auth", rateLimiterManager.middleware);
     
+    // public
     app.use("/auth", authRoutes);
 
     return {

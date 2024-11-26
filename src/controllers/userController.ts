@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { User } from "../entities/User";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
 
 const userRepo = AppDataSource.getRepository(User);
@@ -49,4 +50,39 @@ export class UserController {
             return;
         }
     }
+
+    static async login(req: Request, res: Response ): Promise<void> {
+        
+        const { username, password } = req.body;
+        try {
+
+            const user = await AppDataSource.getRepository(User).findOneBy({username} );
+            if(!user) {
+                res.status(404).json({msg:"Invalid credentials!"});
+                return;
+            }
+            
+            const correctPassword = await bcrypt.compare(password,user.password);
+            if(!correctPassword) {
+                res.status(401).json({msg:"Invalid credentials!"});
+                return;
+            }
+
+            const token = jwt.sign({id:user.id, username:user.username},process.env.SECRET_KEY!,{
+                expiresIn:"1h",
+                algorithm:"HS512"
+            })
+
+            res.cookie("authToken", token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "strict",
+                maxAge: 60 * 60 * 1000,
+            });
+
+        }catch(err) {
+            res.status(500).json(err);
+        }
+    }
+
 }
