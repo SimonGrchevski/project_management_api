@@ -1,7 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 
-export const inputNormalizer = (req: Request, res: Response, nextFunc: NextFunction):void => {
-    req.body.username = req.body.username?.toLowerCase().trim();
-    req.body.email = req.body.email?.toLowerCase().trim();
-    nextFunc();
-}
+export const inputNormalizer = (fields: string[]) => {
+    return (req: Request, res: Response, nextFunc: NextFunction): void => {
+        fields.forEach((field) => {
+            if (req.body[field]) {
+                req.body[field] = req.body[field].toLowerCase().trim();
+            }
+        });
+        nextFunc();
+    };
+};

@@ -82,14 +82,14 @@ export class AuthController {
                 algorithm: 'HS512'
             });
 
-            // res.cookie("authToken", token, {
-            //     httpOnly: true,
-            //     secure: process.env.NODE_ENV === "production",
-            //     sameSite: "strict",
-            //     maxAge: 60 * 60 * 1000,
-            // });
-
-            res.status(200).json({ token });
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                maxAge: 3600000,
+                sameSite: "strict",
+            });
+    
+            res.status(200).json({ msg: "Login successful" });
 
         } catch (err) {
             res.status(500).json(err);

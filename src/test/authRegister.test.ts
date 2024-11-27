@@ -210,6 +210,18 @@ describe("Auth API", () => {
             expect(response.body.errors[0].msg).toBe("Username is required");
         });
 
+        it("Should fail when username is undefined", async () => {
+            const response = await request(expressApp)
+                .post("/auth/register")
+                .send({
+                    email: "testemail@email.com",
+                    password: "TestPassword123",
+                });
+
+            expect(response.status).toBe(400);
+            expect(response.body.errors[0].msg).toBe("Username is required");
+        });
+
         it("Should reject excessively long inputs", async () => {
             const response = await request(expressApp)
                 .post("/auth/register")

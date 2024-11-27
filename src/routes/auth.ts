@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.post(
     "/register",
-    inputNormalizer,
+    inputNormalizer(["username","email"]),
     registerValidator,
     validateRequest,
     AuthController.register
@@ -18,6 +18,7 @@ router.post(
 
 router.post(
     "/login",
+    inputNormalizer(["username"]),
     loginValidator,
     validateRequest,
     AuthController.login,
