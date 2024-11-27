@@ -65,7 +65,12 @@ export class AuthController {
 
         try {
 
-            const user = await userRepo.findOneBy({ username });
+            // eventually wrap it in a reusuible function
+            const user = await userRepo
+                .createQueryBuilder("user")
+                .where("LOWER(user.username) = LOWER(:username)", { username })
+                .getOne();
+
             if (!user) {
                 res.status(404).json({ msg: "Invalid credentials!" });
                 return;

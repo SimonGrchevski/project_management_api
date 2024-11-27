@@ -3,7 +3,6 @@ import { AuthController } from "../controllers/authController";
 import { validateRequest } from "../middlewares/validate";
 import { inputNormalizer } from "../middlewares/inputNormalizer";
 import { registerValidator, loginValidator } from "../validators";
-import { check } from "express-validator";
 
 const router = express.Router();
 
