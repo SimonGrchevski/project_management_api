@@ -1,12 +1,14 @@
 import express, { Express } from "express";
 import { Request, Response } from "express";// temporary
 import { AppDataSource } from "./data-source";
-import { malformJsonMiddleware } from "./middlewares/malformedJsonMiddleware";
-import { rateLimiterManager } from "./middlewares/rateLimiterManager";
-import { errorHandler } from "./middlewares/errorHandler";
-import { authenticateToken } from "./middlewares/authenticateToken";
 import authRoutes from "./routes/auth";
 import cookieParser from "cookie-parser";
+import {
+    malformJsonMiddleware,
+    rateLimiterManager,
+    errorHandler,
+    authenticateToken
+} from "./middlewares/";
 
 interface AppWithDataSource {
     app: Express;
@@ -18,7 +20,7 @@ interface CustomRequest extends Request {
 }
 
 export const createApp = (): AppWithDataSource => {
-    
+
     const app = express();
 
     app.use(express.json({ limit: "5kb" }));
@@ -27,7 +29,6 @@ export const createApp = (): AppWithDataSource => {
 
     app.use("/auth", rateLimiterManager.middleware);
 
-    // public
     app.use("/auth", authRoutes);
 
 

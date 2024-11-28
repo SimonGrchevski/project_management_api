@@ -1,7 +1,11 @@
 import express from "express";
 import { AuthController } from "../controllers/authController";
-import { validateRequest } from "../middlewares/validateRequest";
-import { inputNormalizer } from "../middlewares/inputNormalizer";
+import {
+    validateRequest,
+    inputNormalizer,
+    authenticateToken
+} from "../middlewares/";
+
 import { registerValidator, loginValidator } from "../validators";
 
 const router = express.Router();
@@ -9,7 +13,7 @@ const router = express.Router();
 
 router.post(
     "/register",
-    inputNormalizer(["username","email"]),
+    inputNormalizer(["username", "email"]),
     registerValidator,
     validateRequest,
     AuthController.register
@@ -22,6 +26,13 @@ router.post(
     validateRequest,
     AuthController.login,
 );
+
+router.put(
+    "edit",
+    authenticateToken("currentUser"),
+    validateRequest,
+    AuthController.edit
+)
 
 
 
