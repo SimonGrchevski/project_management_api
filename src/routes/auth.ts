@@ -1,6 +1,6 @@
 import express from "express";
 import { AuthController } from "../controllers/authController";
-import { validateRequest } from "../middlewares/validate";
+import { validateRequest } from "../middlewares/validateRequest";
 import { inputNormalizer } from "../middlewares/inputNormalizer";
 import { registerValidator, loginValidator } from "../validators";
 

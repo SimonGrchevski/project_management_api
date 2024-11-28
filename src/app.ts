@@ -3,6 +3,7 @@ import { Request, Response } from "express";// temporary
 import { AppDataSource } from "./data-source";
 import { malformJsonMiddleware } from "./middlewares/malformedJsonMiddleware";
 import { rateLimiterManager } from "./middlewares/rateLimiterManager";
+import { errorHandler } from "./middlewares/errorHandler";
 import { authenticateToken } from "./middlewares/authenticateToken";
 import authRoutes from "./routes/auth";
 import cookieParser from "cookie-parser";
@@ -20,9 +21,10 @@ export const createApp = (): AppWithDataSource => {
     
     const app = express();
 
-    app.use(express.json());
+    app.use(express.json({ limit: "5kb" }));
     app.use(cookieParser());
     app.use(malformJsonMiddleware);
+
     app.use("/auth", rateLimiterManager.middleware);
 
     // public
@@ -38,6 +40,9 @@ export const createApp = (): AppWithDataSource => {
         console.log("Welcome user", user);
         res.status(200).json(user);
     })
+
+
+    app.use(errorHandler);
 
     return {
         app,

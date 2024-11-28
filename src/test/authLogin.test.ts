@@ -61,6 +61,11 @@ describe("auth/login", () => {
                 );
             });
 
+            it("Should ignore unexpected fields in login payload", async () => {
+                const response = await logUser(expressApp, { ...testUser, unexpectedField: "ignored" } as any);
+                expect(response.status).toBe(200);
+            });
+
             it("Should fail logging because the username is empty string", async () => {
                 const response = await logUser(expressApp, { ...testUser, username: "" });
                 expect(response.status).toBe(400);
@@ -162,6 +167,7 @@ describe("auth/login", () => {
     });
 
     describe("Token and Cookie Tests", () => {
+
         it("Should reject malformed token", async () => {
             const loginResponse = await logUser(expressApp, testUser);
             const cookiesHeader = loginResponse.headers["set-cookie"];
@@ -181,6 +187,34 @@ describe("auth/login", () => {
             );
         });
 
+        it("Should reject a token with tampered audience (aud)", async () => {
+        
+            const loginResponse = await logUser(expressApp, testUser);
+            const cookieHeader = loginResponse.headers["set-cookie"];
+            const tokenValue = extractTokenFromCookie(cookieHeader);
+            expect(tokenValue).toBeDefined();
+        
+            const decodedToken = jwt.decode(tokenValue!, { complete: true }) as { header: any; payload: any };
+            expect(decodedToken).toBeDefined();
+        
+            decodedToken.payload.aud = "tampered_app";
+        
+            const tamperedToken = [
+                Buffer.from(JSON.stringify(decodedToken.header)).toString("base64"),
+                Buffer.from(JSON.stringify(decodedToken.payload)).toString("base64"),
+                "tampered_signature"
+            ].join(".");
+        
+            const tamperedCookie = `token=${tamperedToken}; Path=/; HttpOnly; SameSite=Strict`;
+        
+            const response = await request(expressApp)
+                .get("/user/me")
+                .set("Cookie", [tamperedCookie]);
+        
+            expect(response.status).toBe(401);
+            expect(response.body.msg).toBe("Invalid token");
+        });
+
         it("Should reject expired tokens", async () => {
             const response = await logUser(expressApp, testUser);
             const cookiesHeader = response.headers["set-cookie"];
@@ -198,6 +232,21 @@ describe("auth/login", () => {
             expect(() => jwt.verify(tokenValue!, process.env.SECRET_KEY!)).toThrow("jwt expired");
         });
 
+        it("Should reject a token with missing claims", async () => {
+            const invalidToken = jwt.sign({}, process.env.SECRET_KEY!, {
+                expiresIn: "1h",
+                algorithm: "HS512",
+            });
+    
+            const response = await request(expressApp)
+                .get("/user/me")
+                .set("Cookie", [`token=${invalidToken}`]);
+    
+            expect(response.status).toBe(401);
+            expect(response.body.msg).toBe("Invalid token");
+        });
+
+        
         it("Should set the token in a cookie with the right attributes on successful login", async () => {
             const response = await logUser(expressApp, testUser);
             const cookiesHeader = response.headers["set-cookie"];
@@ -223,6 +272,7 @@ describe("auth/login", () => {
     });
 
     describe("Edge Cases and Security", () => {
+
         it("Should fail after too many requests in a short period", async () => {
             for (let i = 0; i < RATE_LIMIT_CONFIG.MAX_REQUESTS; i++) {
                 const res = await logUser(expressApp, { ...testUser, username: `testUser${i}` });
@@ -232,6 +282,12 @@ describe("auth/login", () => {
             const res = await logUser(expressApp, testUser);
             expect(res.status).toBe(429);
             expect(res.body.msg).toBe(RATE_LIMIT_CONFIG.ERROR_MESSAGE);
+        });
+
+        it("Should reject excessively large payloads", async () => {
+            const largePayload = { ...testUser, username: "a".repeat(1000000) };
+            const response = await logUser(expressApp, largePayload);
+            expect(response.status).toBe(413);
         });
     });
 });

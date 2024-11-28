@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import { Any } from "typeorm";
 
 interface CustomRequest extends Request {
     [key: string]: any;
@@ -22,7 +21,11 @@ export const authenticateToken = (attachTo: string) => {
         }
 
         try {
-            const decoded = jwt.verify(token, process.env.SECRET_KEY!);
+            const decoded = jwt.verify(token, process.env.SECRET_KEY!, {
+                audience: process.env.AUD,
+                issuer: process.env.ISS,
+            });
+
             req[attachTo] = decoded;
             nextFunc();
         } catch (err: any) {

@@ -82,10 +82,16 @@ export class AuthController {
                 return;
             }
 
-            const token = jwt.sign({ id: user?.id, username: user?.username }, process.env.SECRET_KEY!, {
-                expiresIn: "1h",
-                algorithm: 'HS512'
-            });
+            const token = jwt.sign(
+                { 
+                    id: user?.id, 
+                    username: user?.username,
+                    aud: process.env.AUD,
+                    iss: process.env.ISS, 
+                },
+                process.env.SECRET_KEY!,
+                { expiresIn: "1h", algorithm: 'HS512'}
+            );
 
             res.cookie("token", token, {
                 httpOnly: true,
