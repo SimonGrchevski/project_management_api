@@ -28,7 +28,7 @@ router.post(
 );
 
 router.put(
-    "edit",
+    "/edit",
     authenticateToken("currentUser"),
     validateRequest,
     AuthController.edit

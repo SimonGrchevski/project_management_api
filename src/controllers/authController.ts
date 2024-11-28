@@ -117,8 +117,6 @@ export class AuthController {
         const { username, password, email } = req.body;
 
         const userRepo = AppDataSource.getRepository(User);
-
-
         try {
 
             const user = await userRepo.findOneBy({ id: userId });
