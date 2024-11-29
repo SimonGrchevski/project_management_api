@@ -115,9 +115,7 @@ describe("Auth API", () => {
             const response = await registerUser(expressApp, testUser);;
 
             expect(response.status).toBe(400);
-            expect(response.body).toStrictEqual({
-                msg: "username or email is already used",
-            });
+            expect(response.body.message).toBe("username or email is already used");
         });
 
         it("Should return error for duplicate username with different cases", async () => {
@@ -130,9 +128,7 @@ describe("Auth API", () => {
             );
 
             expect(response.status).toBe(400);
-            expect(response.body).toStrictEqual({
-                msg: "username or email is already used",
-            });
+            expect(response.body.message).toBe("username or email is already used");
         });
 
         it("Should return error for duplicate email with different cases", async () => {
@@ -145,9 +141,7 @@ describe("Auth API", () => {
             );
 
             expect(response.status).toBe(400);
-            expect(response.body).toStrictEqual({
-                msg: "username or email is already used",
-            });
+            expect(response.body.message).toBe("username or email is already used");
         });
 
         it("Should fail if the request body is empty", async () => {

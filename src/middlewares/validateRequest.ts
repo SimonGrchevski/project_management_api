@@ -1,5 +1,6 @@
 import {Request, Response, NextFunction} from "express";
 import { validationResult } from "express-validator";
+import { ErrorFactory } from "../utility/errorFactory";
 
 export const validateRequest = (
     req: Request,
@@ -8,12 +9,7 @@ export const validateRequest = (
 ) => {
     const err = validationResult(req);
     if(!err.isEmpty()) {
-        const validationError = new Error("Validation failed");
-        (validationError as any ).type = "validation";
-        (validationError as any ).status = 400,
-        (validationError as any ).errors = err.array();
-
-        return next(validationError);
+        return next(ErrorFactory.badRequest(err.array(),"Validation failed"));
     }
     next();
 }

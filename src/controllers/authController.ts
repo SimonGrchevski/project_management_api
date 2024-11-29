@@ -1,23 +1,27 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { AppDataSource } from "../data-source";
 import { User } from "../entities/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
 import { CustomRequest } from "../types/customRequest";
+import { ErrorFactory } from "../utility/errorFactory";
 
 
 const userRepo = AppDataSource.getRepository(User);
 
 export class AuthController {
 
-    static async register(req: Request, res: Response): Promise<void> {
+    static async register(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> {
 
         const err = validationResult(req);
 
         if (!err.isEmpty()) {
-            res.status(400).json({ errors: err.array() });
-            return;
+            return next(ErrorFactory.badRequest(err.array()));
         }
 
         const { username, password, email, role } = req.body;
@@ -33,8 +37,10 @@ export class AuthController {
                 .getOne();
 
             if (existingUser) {
-                res.status(400).json({ msg: "username or email is already used" });
-                return;
+                return next(ErrorFactory.badRequest(
+                    err.array(),
+                    "username or email is already used"
+                ));
             }
 
             const hashedPassword = await bcrypt.hash(password, 10);
@@ -47,20 +53,28 @@ export class AuthController {
             const savedUser = await userRepo.save(newUser);
             res.status(201).json({ id: savedUser.id, username: savedUser.username });
 
-        } catch (err) {
-            res.status(500).json({ msg: "Internal server error", err });
-            return;
+        } catch (error) {
+            return next(ErrorFactory.internal(err.array()))
         }
     }
 
 
-    static async login(req: Request, res: Response): Promise<void> {
+    static async login(
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> {
 
         const err = validationResult(req);
 
         if (!err.isEmpty()) {
-            res.status(400).json({ errors: err.array() });
-            return;
+            const errCount = err.array().length
+            return next(
+                ErrorFactory.badRequest(
+                    err.array(),
+                    `Validation failed with ${errCount}error${errCount} > 1? "s":".".Check details for more info, }`
+                )
+            )
         }
 
         const { username, password } = req.body;
@@ -74,14 +88,12 @@ export class AuthController {
                 .getOne();
 
             if (!user) {
-                res.status(404).json({ msg: "Invalid credentials!" });
-                return;
+                return next(ErrorFactory.notFound(err.array(), "Invalid credentials!"));
             }
 
             const correctPassword = await bcrypt.compare(password, user.password);
             if (!correctPassword) {
-                res.status(401).json({ msg: "Invalid credentials!" });
-                return;
+                return next(ErrorFactory.unauthorized(err.array(), "Invalid credentials"));
             }
 
             const token = jwt.sign(
@@ -104,46 +116,47 @@ export class AuthController {
 
             res.status(200).json({ msg: "Login successful" });
 
-        } catch (err) {
-            res.status(500).json(err);
+        } catch (error) {
+            next(ErrorFactory.internal(err.array()))
         }
     }
 
-    static edit = async (req: CustomRequest, res: Response): Promise<void> => {
+
+    static edit = async (
+        req: CustomRequest,
+        res: Response,
+        next: NextFunction): Promise<void> => {
+
         const userId = req.currentUser?.id;
         const { username, password, email } = req.body || {};
 
-        if (!username && !email && !password) {
-            res.status(400).json({ msg: "No changes provided" });
-            return;
-        }
 
+        if (!username && !email && !password)
+            return next(ErrorFactory.badRequest([], "The fields are empty"))
 
         const userRepo = AppDataSource.getRepository(User);
+
         try {
+
             const user = await userRepo.findOneBy({ id: userId });
 
-            if (!user) {
-                res.status(404).json({ msg: "Account cant be found!" });
-                return;
-            }
+            if (!user)
+                return next(ErrorFactory.notFound([], "Account cant be found"));
 
             if (username) {
                 const existingUser = await userRepo.findOne({ where: { username } });
 
-                if (existingUser && existingUser.id !== userId) {
-                    res.status(400).json({ msg: "Username already taken" });
-                    return;
-                }
+                if (existingUser && existingUser.id !== userId)
+                    return next(ErrorFactory.badRequest([], "Username already taken"));
+
                 user.username = username;
             }
 
             if (email) {
                 const existingUser = await userRepo.findOne({ where: { email } });
-                if (existingUser && existingUser.id !== userId) {
-                    res.status(400).json({ msg: "Email already in use" });
-                    return;
-                }
+                if (existingUser && existingUser.id !== userId)
+                    return next(ErrorFactory.badRequest([], "Email already in use"));
+
                 user.email = email;
             }
 
@@ -164,8 +177,7 @@ export class AuthController {
             });
 
         } catch (err) {
-            console.log("Error updating the user:", err);
-            res.status(500).json({ msg: "Internal server errror" });
+            return next(ErrorFactory.internal([], "Internal server error"));
         }
     }
 }

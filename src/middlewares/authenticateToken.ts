@@ -1,12 +1,13 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
+import { ErrorFactory } from "../utility/errorFactory";
 
 interface CustomRequest extends Request {
     [key: string]: any;
 }
 
 export const authenticateToken = (attachTo: string) => {
-    return (req: CustomRequest, res: Response, nextFunc: NextFunction): void => {
+    return (req: CustomRequest, res: Response, next: NextFunction): void => {
 
         const authHeader = req.headers["authorization"];
         const tokenFromHeader = authHeader && authHeader.split(" ")[1]
@@ -15,26 +16,27 @@ export const authenticateToken = (attachTo: string) => {
 
         const token = tokenFromHeader || tokenFromCookie;
 
-        if (!token) {
-            res.status(401).json({ msg: "No token provided" });
-            return;
-        }
+        
 
+        if (!token)
+            return next(ErrorFactory.unauthorized("No token provided"));
+
+        
         try {
             const decoded = jwt.verify(token, process.env.SECRET_KEY!, {
                 audience: process.env.AUD,
                 issuer: process.env.ISS,
             });
-
+            
             req[attachTo] = decoded;
-            nextFunc();
+            next();
         } catch (err: any) {
+            
 
-            if (err.name === "TokenExpiredError") {
-                res.status(401).json({ msg: "Token expired" });
-            }
-            res.status(401).json({ msg: "Invalid token" });
-            return;
+            if (err.name === "TokenExpiredError") 
+                return next(ErrorFactory.unauthorized("Token expired"));
+
+            return next(ErrorFactory.unauthorized([],"Invalid token"))
         }
     };
 };

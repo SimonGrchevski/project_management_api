@@ -139,22 +139,21 @@ describe("auth/edit", () => {
             expect(response.status).toBe(400);
         })
 
-        // it("Should fail with multiple invalid fields", async () => {
-        //     const response = await request(expressApp)
-        //         .put("/auth/edit")
-        //         .set("Cookie", [`token=${token}`])
-        //         .send({
-        //             username: "user@invalid",
-        //             email: "invalidemail",
-        //         });
-        //     expect(response.status).toBe(400);
-            // expect(response.body.errors).toEqual(
-            //     expect.arrayContaining([
-            //         expect.objectContaining({ msg: "Invalid email format" }),
-            //         expect.objectContaining({ msg: "Invalid credentials" }),
-            //     ])
-            // ); for later
-        // });
+        it("Should fail with multiple invalid fields", async () => {
+            const response = await request(expressApp)
+                .put("/auth/edit")
+                .set("Cookie", [`token=${token}`])
+                .send({
+                    username: "user@invalid",
+                    email: "invalidemail",
+                });
+            expect(response.status).toBe(400);
+            expect(response.body.errors).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({ msg: "Invalid email format" }),
+                ])
+            );
+        });
 
         it("should fail because of username is too long - header too large", async() => {
             const response = await request(expressApp)
@@ -176,7 +175,7 @@ describe("auth/edit", () => {
                 path: "password",
             });
         })
-        //
+
         it("Should fail because password is without digit", async() => {
             const response = await request(expressApp)
                 .put("/auth/edit")
@@ -218,7 +217,7 @@ describe("auth/edit", () => {
         })
 
         it("Should fail username is taken", async () => {
-            const res = await registerUser(expressApp, {
+            await registerUser(expressApp, {
                 username: "greatWarrior",
                 password: "Gre@testPassword1",
                 email: "great@email.com"
@@ -272,8 +271,9 @@ describe("auth/edit", () => {
                 .put("/auth/edit")
                 .set("Cookie", [`token=invalid.token.here`])
                 .send({ username: "newUsername" ,id:1});
+            
             expect(response.status).toBe(401);
-            expect(response.body.msg).toBe("Invalid token");
+            expect(response.body.message).toBe("Invalid token");
         });
     })
 })

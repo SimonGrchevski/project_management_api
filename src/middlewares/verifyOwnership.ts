@@ -1,5 +1,7 @@
 import { Response, NextFunction } from "express";
 import { CustomRequest } from "../types/customRequest";
+import { ErrorFactory } from "../utility/errorFactory";
+
 export const verifyOwnership = async (
     req: CustomRequest,
     res: Response,
@@ -9,18 +11,15 @@ export const verifyOwnership = async (
     const targetUserId = req.body.id || req.params.userId;
 
     if (!targetUserId) {
-        res.status(403).json({ msg: "Unauthorized to update this user" });
-        return;
+        return next(ErrorFactory.forbiden("Id is missing"));
     }
 
     if (!tokenUserId) {
-        res.status(401).json({ msg: "Invalid token" });
-        return;
+        return next(ErrorFactory.unauthorized("Token is invalid or missing"));
     }
 
     if (tokenUserId !== targetUserId) {
-        res.status(403).json({ msg: "Unauthorized to update this user" });
-        return;
+        return next(ErrorFactory.forbiden("You not authorized to update this user."));
     }
 
     next();
