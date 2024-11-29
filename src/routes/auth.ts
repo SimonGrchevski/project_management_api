@@ -3,10 +3,15 @@ import { AuthController } from "../controllers/authController";
 import {
     validateRequest,
     inputNormalizer,
-    authenticateToken
+    authenticateToken,
+    verifyOwnership
 } from "../middlewares/";
 
-import { registerValidator, loginValidator } from "../validators";
+import {
+    registerValidator,
+    loginValidator,
+    editValidator,
+} from "../validators";
 
 const router = express.Router();
 
@@ -29,8 +34,11 @@ router.post(
 
 router.put(
     "/edit",
+    inputNormalizer(["username", "email"]),
     authenticateToken("currentUser"),
+    editValidator,
     validateRequest,
+    verifyOwnership,
     AuthController.edit
 )
 

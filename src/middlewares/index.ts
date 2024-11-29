@@ -4,3 +4,4 @@ export { inputNormalizer } from "../middlewares/inputNormalizer";
 export { malformJsonMiddleware } from "./malformedJsonMiddleware";
 export { rateLimiterManager } from "./rateLimiterManager";
 export { validateRequest } from "../middlewares/validateRequest";
+export { verifyOwnership } from "./verifyOwnership";

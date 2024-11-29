@@ -5,7 +5,12 @@ const emailValidator = {
         check("email")
             .isEmail().withMessage("Invalid email format")
     ],
-    login:[]
+    login:[],
+    edit: [
+        check("email")
+            .optional()
+            .isEmail().withMessage("Invalid email format")
+    ]
 };
 
 export default emailValidator;

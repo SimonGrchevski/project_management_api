@@ -13,6 +13,12 @@ const usernameValidator = {
             .notEmpty().withMessage("Username is required")
             .isAlphanumeric().withMessage("Invalid credentials")
             .isLength({ max: 255 }).withMessage("Invalid credentials")
+    ],
+    edit: [
+        check("username")
+            .optional()
+            .isLength({ max: 255 }).withMessage("Invalid username")
+            .isAlphanumeric().withMessage("Username must contain only letters and numbers")
     ]
 };
 

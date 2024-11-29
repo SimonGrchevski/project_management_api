@@ -4,11 +4,8 @@ import { User } from "../entities/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
+import { CustomRequest } from "../types/customRequest";
 
-
-interface CustomRequest extends Request {
-    [key: string]: any;
-}
 
 const userRepo = AppDataSource.getRepository(User);
 
@@ -114,17 +111,23 @@ export class AuthController {
 
     static edit = async (req: CustomRequest, res: Response): Promise<void> => {
         const userId = req.currentUser?.id;
-        const { username, password, email } = req.body;
+        const { username, password, email } = req.body || {};
+
+        if (!username && !email && !password) {
+            res.status(400).json({ msg: "No changes provided" });
+            return;
+        }
+
 
         const userRepo = AppDataSource.getRepository(User);
         try {
-
             const user = await userRepo.findOneBy({ id: userId });
 
             if (!user) {
-                res.status(404).json({ msg: "Acount cant be found!" });
+                res.status(404).json({ msg: "Account cant be found!" });
                 return;
             }
+
             if (username) {
                 const existingUser = await userRepo.findOne({ where: { username } });
 
@@ -145,8 +148,7 @@ export class AuthController {
             }
 
             if (password) {
-                const hashedPassword = await bcrypt.hash(password, 10);
-                user.password = hashedPassword;
+                user.password = await bcrypt.hash(password, 10);
             }
 
             await userRepo.save(user)

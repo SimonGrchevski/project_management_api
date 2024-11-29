@@ -3,7 +3,7 @@ import emailValidator from "./emailValidator";
 import passwordValidator from "./passwordValidator";
 import { ValidationChain } from "express-validator";
 
-type Context = "register" | "login";
+type Context = "register" | "login" | "edit";
 type Field = "username" | "email" | "password";
 
 const validatorSchemas: Record<Field, Record<Context, ValidationChain[]>> = {
