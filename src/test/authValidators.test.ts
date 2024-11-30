@@ -7,6 +7,7 @@ const app = express();
 app.use(express.json());
 
 
+
 const validateMiddleware = (validators: any) => async (req: Request, res: Response) => {
     await Promise.all(validators.map((validator: any) => validator.run(req)));
     const errors = validationResult(req);

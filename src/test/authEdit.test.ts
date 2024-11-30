@@ -1,12 +1,11 @@
 import  request from "supertest";
-import { createApp } from "../app";
+import TestApp from "./utility/testApp";
 import { AppDataSource } from "../data-source";
 import { Express } from "express";
 import {
     registerUser,
     logUser,
     testUser,
-    cleanData
 } from "./utility/utility"
 import {rateLimiterManager} from "../middlewares";
 
@@ -16,32 +15,30 @@ describe("auth/edit", () => {
     let token: string;
 
     beforeAll( async () => {
-        const appWithData = createApp();
+
+        const appWithData = await TestApp.getInstance();
+        await TestApp.cleanData();
         expressApp = appWithData.app;
         dataSource = appWithData.dataSource;
-
-        await dataSource.initialize();
-        await cleanData(dataSource);
-
     })
 
-
     afterAll( async() => {
-        await cleanData(dataSource);
-        if(dataSource.isInitialized) {
-            await dataSource.destroy();
-        }
+        await TestApp.cleanup();
     });
 
     beforeEach( async() => {
-        rateLimiterManager.resetAllKeys();
-        await cleanData(dataSource);
         await registerUser(expressApp,testUser);
         const loginResponse = await logUser(expressApp,testUser);
         token = loginResponse.headers["set-cookie"][0]
-            .split(";")[0]
-            .split("=")[1];
+        .split(";")[0]
+        .split("=")[1];
+        rateLimiterManager.resetAllKeys();
     })
+
+    afterEach(async () => {
+        await TestApp.cleanData();
+    });
+
 
     describe("Successfull update", () => {
         
@@ -260,6 +257,7 @@ describe("auth/edit", () => {
                 .put("/auth/edit")
                 .set("Cookie", [`token=${token}`])
                 .send({email:`     ${testUser.email}   `,id:1});
+
             expect(response.status).toBe(200);
             expect(response.body.user.email).toBe(testUser.email);
         })

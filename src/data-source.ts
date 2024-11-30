@@ -14,7 +14,7 @@ export const AppDataSource = new DataSource({
     port: isTestEnv? undefined: parseInt(process.env.DB_PORT || "3306"),
     username: isTestEnv? undefined: process.env.DB_USER!,
     password: isTestEnv? undefined: process.env.DB_PASSWORD!,
-    database: isTestEnv? ":memory": process.env.DB_NAME!,
+    database: isTestEnv? `:memory:${process.env.JEST_WORKER_ID}`: process.env.DB_NAME!,
     synchronize: isTestEnv,
     logging: !isTestEnv && !isProduction,
     entities: Object.values(entities),

@@ -1,34 +1,30 @@
 import request from "supertest";
-import { createApp } from "../app";
+import TestApp from "./utility/testApp";
 import { AppDataSource } from "../data-source";
 import { User } from "../entities/User";
 import bcrypt from "bcrypt";
 import { Express } from "express";
 import { rateLimiterManager } from "../middlewares/rateLimiterManager";
 import { RATE_LIMIT_CONFIG } from "../config/constants";
-import { cleanData, registerUser, testUser } from "./utility/utility";
+import {registerUser, testUser } from "./utility/utility";
 
 describe("Auth API", () => {
     let expressApp: Express;
     let dataSource: typeof AppDataSource;
 
     beforeAll(async () => {
-        const appWithDataSource = createApp();
-        expressApp = appWithDataSource.app;
-        dataSource = appWithDataSource.dataSource;
-
-        await dataSource.initialize();
-
+        const appWithData = await TestApp.getInstance();
+        await TestApp.cleanData();
+        expressApp = appWithData.app;
+        dataSource = appWithData.dataSource;
     });
 
     afterAll(async () => {
-        if (dataSource.isInitialized) {
-            await dataSource.destroy();
-        }
+        await TestApp.cleanup();
     });
 
     afterEach(async () => {
-        await cleanData(dataSource);
+        await TestApp.cleanData();
     });
 
     beforeEach(async () => {

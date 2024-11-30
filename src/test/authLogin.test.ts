@@ -1,17 +1,15 @@
-import request, { Response } from "supertest";
-import { createApp } from "../app";
+import request from "supertest";
 import { AppDataSource } from "../data-source";
 import { Express } from "express";
 import jwt from "jsonwebtoken";
 import { rateLimiterManager } from "../middlewares/rateLimiterManager";
 import { RATE_LIMIT_CONFIG } from "../config/constants";
 import { advanceBy, clear } from "jest-date-mock";
+import TestApp from "./utility/testApp";
 import {
     logUser,
     registerUser,
     extractTokenFromCookie,
-    dataDestroy,
-    cleanData,
     testUser
 } from "./utility/utility";
 
@@ -20,20 +18,19 @@ describe("auth/login", () => {
     let dataSource: typeof AppDataSource;
 
     beforeAll(async () => {
-        const appWithDataSource = createApp();
-        expressApp = appWithDataSource.app;
-        dataSource = appWithDataSource.dataSource;
-
-        await dataSource.initialize();
+        const appWithData = await TestApp.getInstance();
+        await TestApp.cleanData();
+        expressApp = appWithData.app;
+        dataSource = appWithData.dataSource;
     });
 
     afterAll(async () => {
-        await dataDestroy(dataSource);
-        clear();
+        await TestApp.cleanup();
     });
 
     afterEach(async () => {
-        await cleanData(dataSource);
+        await TestApp.cleanData();
+        clear();
     });
 
     beforeEach(async () => {
