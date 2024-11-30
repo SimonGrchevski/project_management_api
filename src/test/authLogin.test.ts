@@ -180,11 +180,7 @@ describe("auth/login", () => {
                 .set("Cookie", [`token=${malformedToken}`]);
 
             expect(response.status).toBe(401);
-            expect(response.body).toEqual(
-                expect.objectContaining({
-                    msg: "Invalid token",
-                })
-            );
+            expect(response.body.message).toBe("Invalid token");
         });
 
         it("Should reject a token with tampered audience (aud)", async () => {
@@ -212,7 +208,7 @@ describe("auth/login", () => {
                 .set("Cookie", [tamperedCookie]);
         
             expect(response.status).toBe(401);
-            expect(response.body.msg).toBe("Invalid token");
+            expect(response.body.message).toBe("Invalid token");
         });
 
         it("Should reject expired tokens", async () => {
@@ -243,7 +239,7 @@ describe("auth/login", () => {
                 .set("Cookie", [`token=${invalidToken}`]);
     
             expect(response.status).toBe(401);
-            expect(response.body.msg).toBe("Invalid token");
+            expect(response.body.message).toBe("Invalid token");
         });
 
         
