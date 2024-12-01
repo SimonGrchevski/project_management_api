@@ -41,7 +41,7 @@ describe("Error Handler", () => {
 
         const unexpectedError = new Error("Internal Server Error");
 
-        errorHandler(unexpectedError, req as Request, res as Response, next);
+        errorHandler(unexpectedError as CustomError, req as Request, res as Response, next);
 
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({
