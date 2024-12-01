@@ -1,13 +1,13 @@
 import  request from "supertest";
-import TestApp from "./utility/testApp";
-import { AppDataSource } from "../data-source";
+import TestApp from "../../utility/testApp";
+import { AppDataSource } from "../../../data-source";
 import { Express } from "express";
 import {
     registerUser,
     logUser,
     testUser,
-} from "./utility/utility"
-import {rateLimiterManager} from "../middlewares";
+} from "../../utility/utility"
+import {rateLimiterManager} from "../../../middlewares";
 
 describe("auth/edit", () => {
     let expressApp: Express;

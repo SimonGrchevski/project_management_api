@@ -7,9 +7,16 @@ export const validateRequest = (
     _: Response,
     next: NextFunction
 ) => {
-    const err = validationResult(req);
-    if(!err.isEmpty()) {
-        return next(ErrorFactory.badRequest(err.array(),"Validation failed"));
+    try {
+        const err = validationResult(req);
+        if(!err.isEmpty()) {
+            return next(ErrorFactory.badRequest(err.array(),"Validation failed"));
+        }
+
+        next();
+    } catch(err) {
+        next(ErrorFactory.internal(err, "Unexpected error in validation:"));
     }
-    next();
+   
 }
+

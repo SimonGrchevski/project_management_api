@@ -1,17 +1,17 @@
 import request from "supertest";
-import { AppDataSource } from "../data-source";
+import { AppDataSource } from "../../../data-source";
 import { Express } from "express";
 import jwt from "jsonwebtoken";
-import { rateLimiterManager } from "../middlewares/rateLimiterManager";
-import { RATE_LIMIT_CONFIG } from "../config/constants";
+import { rateLimiterManager } from "../../../middlewares/rateLimiterManager";
+import { RATE_LIMIT_CONFIG } from "../../../config/constants";
 import { advanceBy, clear } from "jest-date-mock";
-import TestApp from "./utility/testApp";
+import TestApp from "../../utility/testApp";
 import {
     logUser,
     registerUser,
     extractTokenFromCookie,
     testUser
-} from "./utility/utility";
+} from "../../utility/utility";
 
 describe("auth/login", () => {
     let expressApp: Express;

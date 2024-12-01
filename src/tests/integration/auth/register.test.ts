@@ -1,12 +1,12 @@
 import request from "supertest";
-import TestApp from "./utility/testApp";
-import { AppDataSource } from "../data-source";
-import { User } from "../entities/User";
+import TestApp from "../../utility/testApp";
+import { AppDataSource } from "../../../data-source";
+import { User } from "../../../entities/User";
 import bcrypt from "bcrypt";
 import { Express } from "express";
-import { rateLimiterManager } from "../middlewares/rateLimiterManager";
-import { RATE_LIMIT_CONFIG } from "../config/constants";
-import {registerUser, testUser } from "./utility/utility";
+import { rateLimiterManager } from "../../../middlewares/rateLimiterManager";
+import { RATE_LIMIT_CONFIG } from "../../../config/constants";
+import {registerUser, testUser } from "../../utility/utility";
 
 describe("Auth API", () => {
     let expressApp: Express;

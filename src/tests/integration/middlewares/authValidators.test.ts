@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-import { buildValidator } from "../validators/buildValidator";
+import { buildValidator } from "../../../validators/buildValidator";
 import express, { Request, Response } from "express";
 import request from "supertest";
 

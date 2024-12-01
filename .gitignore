@@ -5,3 +5,5 @@ dist/
 *.sqlite3
 *.db
 *.db3
+:*
+coverage/
