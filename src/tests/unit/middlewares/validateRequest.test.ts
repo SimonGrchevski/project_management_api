@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response} from "express";
 import { validationResult } from "express-validator";
 import { validateRequest } from "../../../middlewares";
 import { jest } from "@jest/globals";
@@ -101,7 +101,10 @@ describe("Validate request", () => {
         });
 
         validateRequest(req as Request, res as Response, next);
-        expect(ErrorFactory.internal).toHaveBeenCalledWith(expect.any(Error));
+        expect(ErrorFactory.internal).toHaveBeenCalledWith(
+            expect.any(Error),
+            "Unexpected error in validation:"
+        );
     });
 
     it("Should handle empty request gracefuly", () => {

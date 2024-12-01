@@ -52,3 +52,4 @@ const createRateLimiterManager = (): RateLimiterManager => {
 };
 
 export const rateLimiterManager = createRateLimiterManager();
+export default createRateLimiterManager;
