@@ -11,13 +11,6 @@ describe("Input normalizer middleware", () => {
     let res: Partial<Response>
     let next: jest.Mock;
 
-    // beforeEach(() => {
-    //     req: { body:{} }
-    //     res: {}
-    //     next: jest.fn()
-    // });
-
-
     beforeEach(() => {
         req = { body: {} };
         res = {};

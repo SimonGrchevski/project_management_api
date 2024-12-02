@@ -75,8 +75,8 @@ describe("ErrorFactory", () => {
         const err = ErrorFactory.badRequest(details,"Serialization test" )
 
         const json = JSON.stringify(err);
-        expect(json).toContain('"statusCode":400');
         expect(json).toContain('"message":"Serialization test"');
-        expect(json).toContain('"details":[{"msg":"Invalid data","param":"data"}]');
+        expect(json).toContain('"statusCode":400');
+        expect(json).toContain('"details":[{"msg":"Invalid data","field":"username"}]');
     })
 })

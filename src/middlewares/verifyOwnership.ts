@@ -8,7 +8,7 @@ export const verifyOwnership = async (
     next: NextFunction
 ): Promise<void> => {
     const tokenUserId = req.currentUser?.id;
-    const targetUserId = req.body.id || req.params.userId;
+    const targetUserId = req.body?.id || req.params?.userId;
 
     if (!targetUserId) {
         return next(ErrorFactory.forbiden("Id is missing"));
