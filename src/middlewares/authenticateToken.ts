@@ -9,14 +9,12 @@ interface CustomRequest extends Request {
 export const authenticateToken = (attachTo: string) => {
     return (req: CustomRequest, res: Response, next: NextFunction): void => {
 
-        const authHeader = req.headers["authorization"];
+        const authHeader = req.headers && req.headers["authorization"];
         const tokenFromHeader = authHeader && authHeader.split(" ")[1]
 
         const tokenFromCookie = req.cookies?.token;
 
         const token = tokenFromHeader || tokenFromCookie;
-
-        
 
         if (!token)
             return next(ErrorFactory.unauthorized("No token provided"));

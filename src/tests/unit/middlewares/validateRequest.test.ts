@@ -87,8 +87,6 @@ describe("Validate request", () => {
     
         validateRequest(req as Request, res as Response, next);
     
-        console.log("ErrorFactory calls:", (ErrorFactory.badRequest as jest.Mock).mock.calls);
-    
         expect(ErrorFactory.badRequest).toHaveBeenCalledWith(
             [{ msg: "Invalid username", param: "username" }], "Validation failed"
         );

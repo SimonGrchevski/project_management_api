@@ -210,7 +210,7 @@ describe("Auth API", () => {
                 .set("Content-Type", "application/json")
                 .send('{username: testuser, password: Testpassword1, email: testemail.com}');
             expect(response.status).toBe(400);
-            expect(response.body.msg).toBe("Invalid JSON payload");
+            expect(response.body.message).toBe("Invalid JSON payload");
         });
     });
 

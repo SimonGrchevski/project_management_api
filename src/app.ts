@@ -4,7 +4,7 @@ import { AppDataSource } from "./data-source";
 import authRoutes from "./routes/auth";
 import cookieParser from "cookie-parser";
 import {
-    malformJsonMiddleware,
+    malformedJson,
     rateLimiterManager,
     errorHandler,
     authenticateToken
@@ -25,7 +25,7 @@ export const createApp = (): AppWithDataSource => {
 
     app.use(express.json({ limit: "5kb" }));
     app.use(cookieParser());
-    app.use(malformJsonMiddleware);
+    app.use(malformedJson);
 
     app.use("/auth", rateLimiterManager.middleware);
 
