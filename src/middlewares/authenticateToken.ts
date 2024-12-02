@@ -17,13 +17,14 @@ export const authenticateToken = (attachTo: string) => {
         const token = tokenFromHeader || tokenFromCookie;
 
         if (!token)
-            return next(ErrorFactory.unauthorized("No token provided"));
+            return next(ErrorFactory.unauthorized([],"No token provided"));
 
         
         try {
             const decoded = jwt.verify(token, process.env.SECRET_KEY!, {
                 audience: process.env.AUD,
                 issuer: process.env.ISS,
+                algorithms: ["HS256"]
             });
             
             req[attachTo] = decoded;
@@ -32,7 +33,7 @@ export const authenticateToken = (attachTo: string) => {
             
 
             if (err.name === "TokenExpiredError") 
-                return next(ErrorFactory.unauthorized("Token expired"));
+                return next(ErrorFactory.unauthorized([],"Token expired"));
 
             return next(ErrorFactory.unauthorized([],"Invalid token"))
         }
