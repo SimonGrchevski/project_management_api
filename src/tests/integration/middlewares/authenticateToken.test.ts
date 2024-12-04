@@ -143,7 +143,7 @@ describe("Authenicate Token", () => {
 
         const res = await request(expressApp)
             .get("/user/me")
-            .set("Authorization", `Bearer token`)
+            .set("Authorization", `Bearer ${token}`)
 
         expect(res.status).toBe(401);
         expect(res.body.message).toBe("Invalid token");
