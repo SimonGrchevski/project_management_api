@@ -40,7 +40,11 @@ describe("Authenicate Token", () => {
         const validToken = jwt.sign(
             { id: 1, username: "testuser" },
             process.env.SECRET_KEY!,
-            { audience: process.env.AUD, issuer: process.env.ISS }
+            { 
+                audience: process.env.AUD, 
+                issuer: process.env.ISS,
+                algorithm: "HS512"
+            }
         )
 
         const res = await request(expressApp)
@@ -63,7 +67,6 @@ describe("Authenicate Token", () => {
             .set("Authorization", `Bearer invalidtoken`)
 
         expect(res.status).toBe(401);
-        console.log(res.body);
         expect(res.body.message).toBe("Invalid token");
     })
 
@@ -71,10 +74,11 @@ describe("Authenicate Token", () => {
         const expiredToken = jwt.sign(
             { id: 1, username: "username" },
             process.env.SECRET_KEY!, {
-            audience: process.env.AUD,
-            issuer: process.env.ISS,
-            expiresIn: "-1s"
-        }
+                audience: process.env.AUD,
+                issuer: process.env.ISS,
+                expiresIn: "-1s", 
+                algorithm: "HS512"
+            }
         )
 
         const res = await request(expressApp)
@@ -94,7 +98,7 @@ describe("Authenicate Token", () => {
         },
             process.env.SECRET_KEY!, {
             audience: process.env.AUD,
-            issuer: process.env.ISS,
+            issuer: process.env.ISS, algorithm: "HS512"
         }
         )
 
@@ -120,9 +124,9 @@ describe("Authenicate Token", () => {
         const token = jwt.sign(
             { id: 1, username: "username"},
             process.env.SECRET_KEY!, { 
-                algorithm: "HS512", 
+                algorithm: "HS256", 
                 audience: process.env.AUD, 
-                issuer: process.env.ISS 
+                issuer: process.env.ISS,
             }
         )
 
@@ -154,14 +158,16 @@ describe("Authenicate Token", () => {
             id: 1, username: "username"
         }, process.env.SECRET_KEY!, {
             audience: process.env.AUD,
-            issuer: process.env.ISS
+            issuer: process.env.ISS,
+            algorithm: "HS512"
         })
 
         const cookieToken = jwt.sign({
             id: 2, username: "username2"
         }, process.env.SECRET_KEY!, {
             audience: process.env.AUD,
-            issuer: process.env.ISS
+            issuer: process.env.ISS,
+            algorithm: "HS512"
         })
 
         const res = await request(expressApp)

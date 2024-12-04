@@ -28,7 +28,6 @@ export const createApp = (): AppWithDataSource => {
     app.use(malformedJson);
 
     app.use("/auth", rateLimiterManager.middleware);
-
     app.use("/auth", authRoutes);
 
 

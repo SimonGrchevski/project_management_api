@@ -47,6 +47,7 @@ describe("auth/edit", () => {
                 .put("/auth/edit")
                 .set("Cookie", [`token=${token}`])
                 .send({username:"newusername",id:1});
+            
             expect( response.status).toBe(200);
             expect(response.body.user.username).toBe("newusername");
         })

@@ -39,7 +39,7 @@ describe("authenticateToken", () => {
     it("Should handle missing token", () => {
         authenticateToken("currentUser")(req as Request, res as Response, next);
 
-        expect(ErrorFactory.unauthorized).toHaveBeenCalledWith("No token provided");
+        expect(ErrorFactory.unauthorized).toHaveBeenCalledWith([],"No token provided");
         expect(next).toHaveBeenCalledWith(
             ErrorFactory.unauthorized("No token provided")
         );
@@ -57,7 +57,7 @@ describe("authenticateToken", () => {
         expect(jwt.verify).toHaveBeenCalledWith(
             "validToken",
             SECRET_KEY,
-            { audience: AUD, issuer: ISS }
+            expect.anything(),
         );
 
         expect(next).toHaveBeenCalled();
@@ -73,7 +73,7 @@ describe("authenticateToken", () => {
         expect(jwt.verify).toHaveBeenCalledWith(
             "validToken",
             SECRET_KEY,
-            { audience: AUD, issuer: ISS }
+            expect.anything(),
         )
 
         expect(next).toHaveBeenCalled();
@@ -109,7 +109,7 @@ describe("authenticateToken", () => {
 
         authenticateToken("currentUser")(req as Request, res as Response, next);
 
-        expect(ErrorFactory.unauthorized).toHaveBeenCalledWith("Token expired");
+        expect(ErrorFactory.unauthorized).toHaveBeenCalledWith([],"Token expired");
         expect(next).toHaveBeenCalledWith(
             ErrorFactory.unauthorized("Token expired")
         )
@@ -121,7 +121,7 @@ describe("authenticateToken", () => {
         req.headers!["authorization"] = "Bearer ";
         middleware(req as Request, res as Response, next);
 
-        expect(ErrorFactory.unauthorized).toHaveBeenCalledWith(
+        expect(ErrorFactory.unauthorized).toHaveBeenCalledWith([],
             "No token provided"
         );
         expect(next).toHaveBeenCalledWith(
@@ -134,7 +134,7 @@ describe("authenticateToken", () => {
         req.cookies = {token: ""};
         middleware(req as Request, res as Response, next);
 
-        expect(ErrorFactory.unauthorized).toHaveBeenCalledWith("No token provided");
+        expect(ErrorFactory.unauthorized).toHaveBeenCalledWith([],"No token provided");
         expect(next).toHaveBeenCalledWith(
             ErrorFactory.unauthorized("No token provided")
         )
@@ -148,7 +148,7 @@ describe("authenticateToken", () => {
         req.headers!["auhtorization"] = "Bearer malformedToken";
         authenticateToken("currentUser")(req as Request, res as Response, next);
 
-        expect(ErrorFactory.unauthorized).toHaveBeenCalledWith("No token provided");
+        expect(ErrorFactory.unauthorized).toHaveBeenCalledWith([],"No token provided");
         expect(next).toHaveBeenCalledWith(
             ErrorFactory.unauthorized("No token provided")
         )

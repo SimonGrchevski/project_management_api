@@ -11,6 +11,7 @@ export const authenticateToken = (attachTo: string) => {
 
         const authHeader = req.headers && req.headers["authorization"];
         const tokenFromHeader = authHeader && authHeader.split(" ")[1]
+        
 
         const tokenFromCookie = req.cookies?.token;
 
@@ -24,7 +25,7 @@ export const authenticateToken = (attachTo: string) => {
             const decoded = jwt.verify(token, process.env.SECRET_KEY!, {
                 audience: process.env.AUD,
                 issuer: process.env.ISS,
-                algorithms: ["HS256"]
+                algorithms: ["HS512"]
             });
             
             req[attachTo] = decoded;

@@ -27,7 +27,6 @@ describe('malformedJson', () => {
         
         expressApp.use(express.json());
         
-        console.log("Using malformed json");
         expressApp.use(malformedJson);
 
         expressApp.post("/error", async (req: Request, res: Response) => {
