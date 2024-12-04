@@ -7,5 +7,5 @@ dist/
 *.db3
 :*
 coverage/
-/nbproject/private/
+nbproject
 .idea
