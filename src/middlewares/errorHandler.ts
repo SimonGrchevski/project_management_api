@@ -7,7 +7,6 @@ export const errorHandler = (
     res: Response,
     _: NextFunction
 ): void => {
-
     const statusCode = err.statusCode || 500;
     const message = err.message;
     const details = err.details;

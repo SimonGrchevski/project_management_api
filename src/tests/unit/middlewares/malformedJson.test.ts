@@ -23,7 +23,9 @@ describe("MalformedJson", () => {
             json: jest.fn()
         } as unknown as Response
         next = jest.fn();
-
+    })
+    
+    afterEach(()=> {
         jest.clearAllMocks();
     })
 

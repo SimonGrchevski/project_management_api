@@ -11,6 +11,11 @@ let keyGenerator: (req: Request) => string;
 })
 
 describe("RateLimitManager", () => {
+    
+    afterEach(async () => {
+        jest.clearAllMocks();
+    })
+    
     describe("Key generation", () => {
 
         it("should use x-forwarded-for if available", () => {

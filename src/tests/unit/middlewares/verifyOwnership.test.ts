@@ -22,8 +22,12 @@ describe("VerifyOwnership", () => {
             status: jest.fn().mockReturnThis(),
             json: jest.fn()
         } as unknown as Response
-
+        
         next = jest.fn();
+    })
+    
+    afterEach(()=> {
+        jest.clearAllMocks();
     })
 
     it("Should error with forbiden", async () => {

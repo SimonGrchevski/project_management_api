@@ -16,6 +16,10 @@ describe("Input normalizer middleware", () => {
         res = {};
         next = jest.fn();
     });
+    
+    afterEach(() => {
+        jest.clearAllMocks();
+    })
 
     it("Should trim and lowercase the input", () => {
         req.body = {

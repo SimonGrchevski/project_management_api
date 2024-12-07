@@ -17,7 +17,12 @@ describe("Error Handler", () => {
             status: jest.fn().mockReturnThis(),
             json: jest.fn()
         } as unknown as Response
-        next= jest.fn()      
+        next= jest.fn()
+        
+    })
+    
+    afterEach(()=> {
+        jest.clearAllMocks();
     })
 
     it("Should handle custom error with specific status and message", () => {

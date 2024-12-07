@@ -180,4 +180,20 @@ export class AuthController {
             return next(ErrorFactory.internal([], "Internal server error"));
         }
     }
+
+    static delete = async (
+        req: CustomRequest,
+        res: Response,
+        next: NextFunction): Promise<void> => {
+        
+        const {userId} = req.params;
+        const result = await AppDataSource.getRepository(User).delete({id: +userId});
+
+        if(result.affected === 0)
+            return next(ErrorFactory.notFound([],"User cant be found"));
+        
+        res.status(200).json({
+            msg: "User deleted successfully"
+        })
+    }
 }

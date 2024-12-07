@@ -32,9 +32,11 @@ describe("authenticateToken", () => {
         req = { headers:{}, cookies:{} };
         res = {};
         next = jest.fn();
-
-        jest.clearAllMocks();
     });
+    
+    afterEach(() => {
+        jest.clearAllMocks();
+    })
 
     it("Should handle missing token", () => {
         authenticateToken("currentUser")(req as Request, res as Response, next);
