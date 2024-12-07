@@ -51,3 +51,5 @@ export const testUser = {
     email: "testemail@email.com",
     password: "TestPassword123",
 };
+
+export const isValidId = (id:string) => /^[0-9]+$/.test(id);

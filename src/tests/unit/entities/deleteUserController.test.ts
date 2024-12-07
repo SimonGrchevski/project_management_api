@@ -16,6 +16,9 @@ jest.mock("../../../utility/errorFactory", () => ({
     __esModule: true,
     ErrorFactory: {
         notFound: jest.fn(),
+        internal: jest.fn(),
+        badRequest: jest.fn(),
+        unauthorized: jest.fn(),
     },
 }));
 
@@ -68,4 +71,35 @@ describe("DeleteUserController - Unit Tests", () => {
         
         expect(next).not.toHaveBeenCalled();
     });
+    
+    it("Should handle unexpected errors and call next()", async () => {
+        const err = new Error("Unexpected error");
+        
+        userRepo.delete.mockRejectedValueOnce(err);
+        const next = jest.fn();
+        await AuthController.delete(req as Request, res as Response, next);
+        
+        expect(ErrorFactory.internal).toHaveBeenCalledWith(
+            err, 
+            "Internal server error"
+        );
+        
+        expect(next).toHaveBeenCalled();
+        expect(res.status).not.toHaveBeenCalled();
+        expect(res.json).not.toHaveBeenCalled();
+    })
+    
+    it("Should handle database connection issues", async () => {
+        const dbErr = new Error("Unexpected database connection issues");
+        userRepo.delete.mockRejectedValueOnce(dbErr);
+        const next = jest.fn();
+        await AuthController.delete(req as Request, res as Response, next);
+        
+        expect(ErrorFactory.internal).toHaveBeenCalledWith(
+            dbErr,
+            "Internal server error"
+        );
+        expect(next).toHaveBeenCalled();
+        expect(res.status).not.toHaveBeenCalled();
+    })
 });

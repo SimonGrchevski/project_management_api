@@ -1,6 +1,7 @@
 import { Response, NextFunction } from "express";
 import { CustomRequest } from "../types/customRequest";
 import { ErrorFactory } from "../utility/errorFactory";
+import {isValidId} from "../tests/utility/utility";
 
 export const verifyOwnership = async (
     req: CustomRequest,
@@ -10,7 +11,7 @@ export const verifyOwnership = async (
     const tokenUserId = req.currentUser?.id;
     const targetUserId = req.body?.id || req.params?.userId;
     
-    if (!targetUserId) {
+    if (!targetUserId || !isValidId(targetUserId)) {
         return next(ErrorFactory.forbiden("Id is missing"));
     }
 

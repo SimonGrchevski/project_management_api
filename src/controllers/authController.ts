@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
 import { CustomRequest } from "../types/customRequest";
 import { ErrorFactory } from "../utility/errorFactory";
+import {isValidId} from "../tests/utility/utility";
 
 
 const userRepo = AppDataSource.getRepository(User);
@@ -187,13 +188,19 @@ export class AuthController {
         next: NextFunction): Promise<void> => {
         
         const {userId} = req.params;
-        const result = await AppDataSource.getRepository(User).delete({id: +userId});
-
-        if(result.affected === 0)
-            return next(ErrorFactory.notFound([],"User cant be found"));
         
-        res.status(200).json({
-            msg: "User deleted successfully"
-        })
+        try {
+            
+            const result = await AppDataSource.getRepository(User).delete({id: +userId});
+            if(result.affected === 0)
+                return next(ErrorFactory.notFound([],"User cant be found"));
+            
+            res.status(200).json({
+                msg: "User deleted successfully"
+            })
+            
+        }catch(err) {
+            return next(ErrorFactory.internal(err, "Internal server error"));
+        }
     }
 }
