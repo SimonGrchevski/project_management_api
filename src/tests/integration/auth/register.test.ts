@@ -8,7 +8,7 @@ import { rateLimiterManager } from "../../../middlewares/rateLimiterManager";
 import { RATE_LIMIT_CONFIG } from "../../../config/constants";
 import {registerUser, testUser } from "../../utility/utility";
 
-describe("Auth API", () => {
+describe("Integration | Auth - Register", () => {
     let expressApp: Express;
     let dataSource: typeof AppDataSource;
 
@@ -106,9 +106,9 @@ describe("Auth API", () => {
 
     describe("Registration Errors", () => {
         it("Should return error for duplicate username or email", async () => {
-            await registerUser(expressApp, testUser);
+            const reg = await registerUser(expressApp, testUser);
 
-            const response = await registerUser(expressApp, testUser);;
+            const response = await registerUser(expressApp, testUser);
 
             expect(response.status).toBe(400);
             expect(response.body.message).toBe("username or email is already used");
@@ -252,7 +252,7 @@ describe("Auth API", () => {
 
     describe("Rate Limiting", () => {
         it("Should fail after too many requests in a short period", async () => {
-            for (let i = 0; i < RATE_LIMIT_CONFIG.MAX_REQUESTS; i++) {
+            for (let i = 0; i <= RATE_LIMIT_CONFIG.MAX_REQUESTS; i++) {
                 const res = await registerUser(
                     expressApp, {
                     username: `Username${i}`,

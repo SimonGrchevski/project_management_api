@@ -12,15 +12,15 @@ export const verifyOwnership = async (
     const targetUserId = req.body?.id || req.params?.userId;
     
     if (!targetUserId || !isValidId(targetUserId)) {
-        return next(ErrorFactory.forbiden("Id is missing"));
+        return next(ErrorFactory.forbiden([],"Id is missing"));
     }
 
     if (!tokenUserId) {
-        return next(ErrorFactory.unauthorized("Token is invalid or missing"));
+        return next(ErrorFactory.unauthorized([],"Token is invalid or missing"));
     }
 
     if (tokenUserId !== targetUserId) {
-        return next(ErrorFactory.forbiden("You not authorized to update this user."));
+        return next(ErrorFactory.forbiden([],"You not authorized to update this user."));
     }
     
     next();

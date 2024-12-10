@@ -6,13 +6,10 @@ import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
 import { CustomRequest } from "../types/customRequest";
 import { ErrorFactory } from "../utility/errorFactory";
-import {isValidId} from "../tests/utility/utility";
-
-
 const userRepo = AppDataSource.getRepository(User);
 
 export class AuthController {
-
+    
     static async register(
         req: Request,
         res: Response,
@@ -28,7 +25,6 @@ export class AuthController {
         const { username, password, email, role } = req.body;
 
         try {
-
             const existingUser = await userRepo
                 .createQueryBuilder("user")
                 .where("LOWER(user.username) = :username OR LOWER(user.email) = :email", {
@@ -55,6 +51,7 @@ export class AuthController {
             res.status(201).json({ id: savedUser.id, username: savedUser.username });
 
         } catch (error) {
+            console.log("In the catch");
             return next(ErrorFactory.internal(err.array()))
         }
     }
@@ -187,18 +184,18 @@ export class AuthController {
         res: Response,
         next: NextFunction): Promise<void> => {
         
-        const {userId} = req.params;
+        const {id} = req.body;
         
         try {
-            
-            const result = await AppDataSource.getRepository(User).delete({id: +userId});
+
+            const result = await AppDataSource.getRepository(User).delete({id: +id});
             if(result.affected === 0)
                 return next(ErrorFactory.notFound([],"User cant be found"));
-            
+
             res.status(200).json({
                 msg: "User deleted successfully"
             })
-            
+
         }catch(err) {
             return next(ErrorFactory.internal(err, "Internal server error"));
         }

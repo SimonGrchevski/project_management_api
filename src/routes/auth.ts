@@ -1,5 +1,6 @@
 import express from "express";
 import { AuthController } from "../controllers/authController";
+
 import {
     validateRequest,
     inputNormalizer,
@@ -14,7 +15,6 @@ import {
 } from "../validators";
 
 const router = express.Router();
-
 
 router.post(
     "/register",
@@ -40,6 +40,13 @@ router.put(
     validateRequest,
     verifyOwnership,
     AuthController.edit
+)
+
+router.delete(
+    "/delete",
+    authenticateToken("currentUser"),
+    verifyOwnership,
+    AuthController.delete
 )
 
 

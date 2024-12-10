@@ -9,7 +9,7 @@ import {
 } from "../../utility/utility"
 import {rateLimiterManager} from "../../../middlewares";
 
-describe("auth/edit", () => {
+describe("Integration | Auth - Edit", () => {
     let expressApp: Express;
     let dataSource: typeof AppDataSource;
     let token: string;

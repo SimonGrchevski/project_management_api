@@ -13,7 +13,7 @@ import {
     testUser
 } from "../../utility/utility";
 
-describe("auth/login", () => {
+describe("Integration | Auth - Login", () => {
     let expressApp: Express;
     let dataSource: typeof AppDataSource;
 

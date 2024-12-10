@@ -30,7 +30,7 @@ describe("DeleteUserController - Unit Tests", () => {
 
     beforeEach(() => {
         req = {
-            params: { userId: "1" },
+            body: { id: "1" },
         } as Partial<Request>;
 
         res = {
