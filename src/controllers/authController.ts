@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { AppDataSource } from "../data-source";
-import { User } from "../entities/User";
+import { User } from "../entities";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
@@ -79,7 +79,7 @@ export class AuthController {
 
         try {
 
-            // eventually wrap it in a reusuible function
+            // eventually wrap it in a reusable function
             const user = await userRepo
                 .createQueryBuilder("user")
                 .where("LOWER(user.username) = LOWER(:username)", { username })
@@ -127,21 +127,21 @@ export class AuthController {
 
         const userId = req.currentUser?.id;
         const { username, password, email } = req.body || {};
-
-
+        
         if (!username && !email && !password)
-            return next(ErrorFactory.badRequest([], "The fields are empty"))
-
+            return next(ErrorFactory.badRequest([], "The fields are empty"));
+        
         const userRepo = AppDataSource.getRepository(User);
 
         try {
-
+            
             const user = await userRepo.findOneBy({ id: userId });
 
             if (!user)
                 return next(ErrorFactory.notFound([], "Account cant be found"));
 
             if (username) {
+                
                 const existingUser = await userRepo.findOne({ where: { username } });
 
                 if (existingUser && existingUser.id !== userId)
@@ -162,14 +162,13 @@ export class AuthController {
                 user.password = await bcrypt.hash(password, 10);
             }
 
-            await userRepo.save(user)
+            const savedUser = await userRepo.save(user)
 
             res.status(200).json({
                 msg: "User updated successfully",
                 user: {
-                    id: user.id,
-                    username: user.username,
-                    email: user.email,
+                    username: savedUser.username,
+                    email: savedUser.email,
 
                 }
             });

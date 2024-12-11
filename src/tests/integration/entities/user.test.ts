@@ -5,7 +5,7 @@ import {Repository} from "typeorm";
 import {User} from "../../../entities";
 import {testUser} from "../../utility/utility";
 
-describe('User Controller', () => {
+describe('Integration | User', () => {
     let expressApp: Express;
     let dataSource: typeof AppDataSource;
     let userRepo:Repository<User>

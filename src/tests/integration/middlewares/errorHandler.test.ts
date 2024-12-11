@@ -6,7 +6,7 @@ import { AppDataSource } from "../../../data-source";
 import { rateLimiterManager } from "../../../middlewares/rateLimiterManager";
 import  request  from "supertest";
 
-describe("ErrorHandler", () => {
+describe("Integration | ErrorHandler", () => {
 
     let expressApp: Express;
     let appData: typeof AppDataSource;

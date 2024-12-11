@@ -5,7 +5,7 @@ import request from "supertest";
 import TestApp from "../../utility/testApp";
 import { clear, advanceBy } from "jest-date-mock";
 
-describe("RateLimiter", () => {
+describe("Integration | RateLimiter", () => {
     let expressApp: Express;
     
     beforeAll(async () => {

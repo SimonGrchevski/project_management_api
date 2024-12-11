@@ -14,7 +14,7 @@ jest.mock("../../../utility/errorFactory", () => ({
     }
 }));
 
-describe("authenticateToken", () => {
+describe("Unit | authenticateToken", () => {
 
     let req: Partial<Request>;
     let res: Partial<Response>;

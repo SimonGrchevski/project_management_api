@@ -4,7 +4,7 @@ import { jest } from "@jest/globals";
 
 
 
-describe("Input normalizer middleware", () => {
+describe("Unit | inputNormalizer", () => {
 
 
     let req: Partial<Request>

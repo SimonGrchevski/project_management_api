@@ -1,6 +1,6 @@
 import { ErrorFactory } from "../../../utility/errorFactory";
 
-describe("ErrorFactory", () => {
+describe("Unit | errorFactory", () => {
 
     it("Should create badrequest error", () => {
         const details = {

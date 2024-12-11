@@ -10,7 +10,7 @@ let keyGenerator: (req: Request) => string;
     return jest.fn();
 })
 
-describe("RateLimitManager", () => {
+describe("Unit | rateLimitManager", () => {
     
     afterEach(async () => {
         jest.clearAllMocks();

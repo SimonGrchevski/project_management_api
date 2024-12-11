@@ -5,7 +5,7 @@ import { rateLimiterManager } from "../../../middlewares";
 import TestApp from "../../utility/testApp";
 import jwt from "jsonwebtoken";
 
-describe("Authenicate Token", () => {
+describe("Integration | Authenicate Token", () => {
     let expressApp: Express;
     let dataSource: typeof AppDataSource;
 

@@ -13,7 +13,7 @@ const createTestRoute = (app: Express, validatation: string[] )=>
         })
 }
 
-describe("InputNormalizer", () => {
+describe("Integration | InputNormalizer", () => {
     let expressApp: Express;
 
     beforeAll(async() => {

@@ -5,7 +5,7 @@ import {validateRequest} from "../../../middlewares";
 import { validationResult } from "express-validator";
 import { jest } from "@jest/globals";
 
-describe('/integration/middlewares/validateRequest', () => {
+describe('Integration | validateRequest', () => {
 
     const app = express();
     app.use(express.json());

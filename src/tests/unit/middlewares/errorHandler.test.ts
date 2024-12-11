@@ -4,7 +4,7 @@ import { CustomError } from "../../../types/customError";
 import { jest } from "@jest/globals";
 
 
-describe("Error Handler", () => {
+describe("Unit | errorHandler", () => {
 
     let req: Partial<Request>
     let res: Partial<Response>

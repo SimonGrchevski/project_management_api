@@ -5,7 +5,7 @@ import TestApp from "../../utility/testApp";
 import {Repository} from "typeorm";
 import {testUser} from "../../utility/utility";
 
-describe("User unit tests", () => {
+describe("Unit | User", () => {
     
     let expressApp: Express;
     let dataSource: typeof AppDataSource;

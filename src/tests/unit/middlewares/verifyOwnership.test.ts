@@ -11,7 +11,7 @@ jest.mock("../../../utility/errorFactory", () => ({
     }
 }))
 
-describe("VerifyOwnership", () => {
+describe("Unit | verifyOwnership", () => {
 
     let req:Partial<Request>
     let res:Partial<Response>

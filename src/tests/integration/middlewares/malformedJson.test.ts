@@ -18,7 +18,7 @@ jest.mock("../../../utility/errorFactory", () => ({
 
 
 
-describe('malformedJson', () => {
+describe('Integration | malformedJson', () => {
     let expressApp: Express;
     
     beforeEach(async () => {

@@ -10,7 +10,7 @@ jest.mock("../../../utility/errorFactory", () => ({
 }));
 
 
-describe("MalformedJson", () => {
+describe("Unit | malformedJson", () => {
     let req:Partial<Request>;
     let res:Partial<Response>;
     let next: jest.Mock;

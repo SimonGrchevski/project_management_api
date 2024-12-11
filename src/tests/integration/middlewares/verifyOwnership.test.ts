@@ -19,7 +19,7 @@ app.use((err:(CustomError),req:Request, res:any,next:NextFunction) => {
     });
 })
 
-describe('Verify Ownership Integration Tests', () => {
+describe('Integration | Verify Ownership', () => {
     
     it("Should return 403 when the id is missing", async () => {
         const res = await request(app)
