@@ -51,7 +51,6 @@ export class AuthController {
             res.status(201).json({ id: savedUser.id, username: savedUser.username });
 
         } catch (error) {
-            console.log("In the catch");
             return next(ErrorFactory.internal(err.array()))
         }
     }
@@ -64,7 +63,6 @@ export class AuthController {
     ): Promise<void> {
 
         const err = validationResult(req);
-
         if (!err.isEmpty()) {
             const errCount = err.array().length
             return next(
@@ -76,15 +74,17 @@ export class AuthController {
         }
 
         const { username, password } = req.body;
+        const userRepo = AppDataSource.getRepository(User);
 
         try {
 
             // eventually wrap it in a reusable function
+            
             const user = await userRepo
                 .createQueryBuilder("user")
                 .where("LOWER(user.username) = LOWER(:username)", { username })
                 .getOne();
-
+            
             if (!user) {
                 return next(ErrorFactory.notFound(err.array(), "Invalid credentials!"));
             }
@@ -93,7 +93,6 @@ export class AuthController {
             if (!correctPassword) {
                 return next(ErrorFactory.unauthorized(err.array(), "Invalid credentials"));
             }
-
             const token = jwt.sign(
                 {
                     id: user?.id,
