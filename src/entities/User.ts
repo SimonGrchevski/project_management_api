@@ -22,4 +22,10 @@ export class User extends BaseEntity{
     
     @Column({ type: 'boolean', default: false })
     isEmailVerified: boolean;
+
+    @Column({ nullable: true })
+    verificationToken: string;
+
+    @Column({ nullable: true })
+    verificationTokenExpires: Date;
 }
