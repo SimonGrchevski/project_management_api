@@ -6,25 +6,24 @@ import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
 import { CustomRequest } from "../types/customRequest";
 import { ErrorFactory } from "../utility/errorFactory";
-const userRepo = AppDataSource.getRepository(User);
 
 export class AuthController {
-    
+
     static async register(
         req: Request,
         res: Response,
         next: NextFunction
     ): Promise<void> {
-
         const err = validationResult(req);
-
+        const userRepo = AppDataSource.getRepository(User);
+       
         if (!err.isEmpty()) {
             return next(ErrorFactory.badRequest(err.array()));
         }
 
         const { username, password, email, role } = req.body;
-
         try {
+            
             const existingUser = await userRepo
                 .createQueryBuilder("user")
                 .where("LOWER(user.username) = :username OR LOWER(user.email) = :email", {
@@ -32,7 +31,7 @@ export class AuthController {
                     email
                 })
                 .getOne();
-
+            
             if (existingUser) {
                 return next(ErrorFactory.badRequest(
                     err.array(),
@@ -40,6 +39,7 @@ export class AuthController {
                 ));
             }
 
+           
             const hashedPassword = await bcrypt.hash(password, 10);
             const newUser = userRepo.create({
                 username,
@@ -50,7 +50,7 @@ export class AuthController {
             const savedUser = await userRepo.save(newUser);
             res.status(201).json({ id: savedUser.id, username: savedUser.username });
 
-        } catch (error) {
+        } catch (error:any) {
             return next(ErrorFactory.internal(err.array()))
         }
     }
