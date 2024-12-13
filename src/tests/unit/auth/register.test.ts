@@ -1,15 +1,13 @@
-import {Request, Response, NextFunction} from "express";
+import {Request, Response} from "express";
 import {validationResult} from "express-validator";
 import {AppDataSource} from "../../../data-source";
 import {ErrorFactory} from "../../../utility/errorFactory";
 import bcrypt from "bcrypt";
 import {jest} from "@jest/globals";
-import {createQueryBuilder, Repository} from "typeorm";
+import {Repository} from "typeorm";
 import {User} from "../../../entities";
-import {Query} from "mysql2";
 import {testUser} from "../../utility/utility";
 import {AuthController} from "../../../controllers/authController";
-import {errorHandler} from "../../../middlewares";
 
 jest.mock("../../../data-source", () => ({
    __esModule: true,
@@ -113,8 +111,8 @@ describe("Unit | Auth - Register", () => {
    it("Should register new user successfully", async () => {
       mockQueryBuilder.getOne.mockResolvedValueOnce(null);
       const hashedPassword = "H@sh3dpAssword";
-      userRepo.create.mockReturnValueOnce({...testUser, passwrod: hashedPassword} as unknown as User);
-      userRepo.save.mockResolvedValue({...testUser, passwrod: hashedPassword, id:1 }as unknown as User);
+      userRepo.create.mockReturnValueOnce({...testUser, password: hashedPassword} as unknown as User);
+      userRepo.save.mockResolvedValue({...testUser, password: hashedPassword, id:1 }as unknown as User);
       
       await AuthController.register(req as Request, res as Response, next);
 
