@@ -8,6 +8,7 @@ import {Repository} from "typeorm";
 import {User} from "../../../entities";
 import {testUser} from "../../utility/utility";
 import {AuthController} from "../../../controllers/authController";
+import {TokenManager} from "../../../utility/tokenManager";
 
 jest.mock("../../../data-source", () => ({
    __esModule: true,
@@ -36,16 +37,31 @@ jest.mock("express-validator", () => ({
    }))
 }))
 
+jest.mock("../../../utility/tokenManager", () => ({
+   __esModule: true,
+   TokenManager: {
+      generateJwtToken: jest.fn(),
+      generateExpiryDate: jest.fn(),
+   }
+}))
+
 describe("Unit | Auth - Register", () => {
    let req: Partial<Request>;
    let res: Partial<Response>;
    let next: jest.Mock;
    let userRepo: jest.Mocked<Repository<User>>;
    let mockQueryBuilder: any;
+   let verificationToken: string;
+   let verificationTokenExpires:Date
+   let hashedPassword: string;
    
    beforeAll( async () => {
+      verificationToken = "mockVerificaiTontoken";
+      verificationTokenExpires = new Date(Date.now() + 24 * 60 *60 * 1000);
+      hashedPassword = "H@sh3dpAssword";
+      //
       req = {
-         body: {...testUser},
+         body: {...testUser, verificationToken, verificationTokenExpires},
       };
       
       res = {
@@ -79,6 +95,32 @@ describe("Unit | Auth - Register", () => {
       jest.clearAllMocks();
    })
    
+   it("Should register a new user and generate a verification token", async () => {
+      const expiryDate = Date.now();
+      (TokenManager.generateJwtToken as jest.Mock).mockReturnValueOnce(verificationToken);
+      (TokenManager.generateExpiryDate as jest.Mock).mockReturnValueOnce(expiryDate)
+      
+      await AuthController.register(req as Request, res as Response, next);
+      
+      expect(validationResult).toHaveBeenCalledWith(req);
+      expect(TokenManager.generateJwtToken).toHaveBeenCalledWith(
+          {email: testUser.email},
+          expect.any(String),
+          expect.objectContaining({expiresIn: "24h"})
+      );
+      expect(userRepo.create).toHaveBeenCalledWith({
+         username: testUser.username,
+         email: testUser.email,
+         password: hashedPassword,
+         role: undefined,
+         verificationToken,
+         verificationTokenExpires:expiryDate
+      });
+      
+      expect(userRepo.create).toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(201);
+   });
+   
    it("Should return 400 if validation fails", async () => {
       (validationResult as unknown as jest.Mock).mockReturnValueOnce({
          isEmpty: jest.fn().mockReturnValue(false),
@@ -110,7 +152,6 @@ describe("Unit | Auth - Register", () => {
    
    it("Should register new user successfully", async () => {
       mockQueryBuilder.getOne.mockResolvedValueOnce(null);
-      const hashedPassword = "H@sh3dpAssword";
       userRepo.create.mockReturnValueOnce({...testUser, password: hashedPassword} as unknown as User);
       userRepo.save.mockResolvedValue({...testUser, password: hashedPassword, id:1 }as unknown as User);
       

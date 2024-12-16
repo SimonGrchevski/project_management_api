@@ -6,6 +6,8 @@ import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
 import { CustomRequest } from "../types/customRequest";
 import { ErrorFactory } from "../utility/errorFactory";
+import {TokenManager} from "../utility/tokenManager";
+import {DeepPartial} from "typeorm";
 
 export class AuthController {
 
@@ -38,15 +40,23 @@ export class AuthController {
                     "username or email is already used"
                 ));
             }
-
-           
+            
+           const verificationToken = TokenManager.generateJwtToken(
+               {email},
+               process.env.SECRET_KEY!,
+               {expiresIn: "24h"}
+           );
+            const verificationTokenExpires = TokenManager.generateExpiryDate(24);
             const hashedPassword = await bcrypt.hash(password, 10);
             const newUser = userRepo.create({
                 username,
                 password: hashedPassword,
                 email,
-                role
-            });
+                role,
+                verificationToken,
+                verificationTokenExpires
+            }as DeepPartial<User>);
+            
             const savedUser = await userRepo.save(newUser);
             res.status(201).json({ id: savedUser.id, username: savedUser.username });
 
@@ -93,6 +103,8 @@ export class AuthController {
             if (!correctPassword) {
                 return next(ErrorFactory.unauthorized(err.array(), "Invalid credentials"));
             }
+            
+            // todo use the class tokenManager
             const token = jwt.sign(
                 {
                     id: user?.id,
