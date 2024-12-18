@@ -9,6 +9,9 @@ import { ErrorFactory } from "../utility/errorFactory";
 import {TokenManager} from "../utility/tokenManager";
 import {DeepPartial} from "typeorm";
 
+
+// verification
+import {VerificationEmailService} from "../utility/verificationEmailService";
 export class AuthController {
 
     static async register(
@@ -58,8 +61,15 @@ export class AuthController {
             }as DeepPartial<User>);
             
             const savedUser = await userRepo.save(newUser);
+            
+            // Verification mail
+            // todo: fix sending mail 
+                console.log("Sending...");
+                await VerificationEmailService.send(email, username, "Nothing for now");
+                console.log("Sent!");
+            //
+            
             res.status(201).json({ id: savedUser.id, username: savedUser.username });
-
         } catch (error:any) {
             return next(ErrorFactory.internal(err.array()))
         }

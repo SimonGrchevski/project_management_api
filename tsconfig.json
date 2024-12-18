@@ -9,8 +9,9 @@
     "strictPropertyInitialization": false,
     "emitDecoratorMetadata": true,
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "typeRoots": ["./node_modules/@types", "./src/types"],
   },
-  "include": ["src/**/*", "src/migration/**/*.ts"],
+  "include": ["src/**/*", "src/migration/**/*.ts", "src/types/*.ts"],
   "exclude": ["node_modules"]
 }
